@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-//あいうえお
+
 
 void main() {
   runApp(const MyApp());
