@@ -25,16 +25,16 @@ class DetailMenu extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min, // Shrinks the Row to fit its children
                 children: [
                   Image.asset(
-                    'images/img.png', // First image asset path
-                    width: 30, // Adjust as needed
-                    height: 30, // Adjust as needed
+                    'images/Registration.png', // First image asset path
+                    width: 40, // Adjust as needed
+                    height: 40, // Adjust as needed
                     fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
                   ),
                   SizedBox(width: 8), // Adds space between the images
                   Image.asset(
-                    'images/img_1.png', // Second image asset path
-                    width: 30, // Adjust as needed
-                    height: 30, // Adjust as needed
+                    'images/Change.png', // Second image asset path
+                    width: 40, // Adjust as needed
+                    height: 40, // Adjust as needed
                     fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
                   ),
                 ],
@@ -57,7 +57,7 @@ class DetailMenu extends StatelessWidget {
                   SizedBox(height: 5), // Space between the text and the image
                   Center(
                     child: Image.asset(
-                      'images/img.png', // Image asset path for the image under the text
+                      'images/Registration.png', // Image asset path for the image under the text
                       width: 100, // Adjust as needed
                       height: 100, // Adjust as needed
                       fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
