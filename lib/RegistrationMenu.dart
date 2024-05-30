@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Simple Text Display',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -18,44 +18,30 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
+class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter Demo Home Page'),
+
+        //ここにタイトル
+        title: Image.asset(
+          'images/logo_test.png',
+          width: 300,  // 幅を指定
+          height: 50,  // 高さを指定
+          fit: BoxFit.contain,  // 画像のフィット方法を指定
+          SizedBox(width: 8), // 画像とテキストの間にスペースを追加
+        )
       ),
+
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'ここに表示されるテキストが入るよ！',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium, // 修正しました
-            ),
-          ],
+        child: Text(
+
+          //ここに中央表示のテキスト
+          'test text',                      //テキスト内容
+          style: TextStyle(fontSize: 24),   //フォントの詳細（サイズとか）
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
+
       ),
     );
   }
