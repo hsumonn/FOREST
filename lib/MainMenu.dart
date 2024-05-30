@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
+import 'Caution.dart'; // Import Caution.dart
 
 void main() {
   runApp(const MyApp());
@@ -102,13 +103,17 @@ class _MyHomePageState extends State<MyHomePage> {
                   IconButton(
                     icon: const Icon(Icons.add),
                     onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Caution()), // Navigate to Caution.dart
+                      );
                       // Handle add button press
                     },
                   ),
                   IconButton(
                     icon: const Icon(Icons.info),
                     onPressed: () {
-                      // Handle info button press
+
                     },
                   ),
                 ],
