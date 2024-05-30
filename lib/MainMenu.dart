@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
-import 'Caution.dart'; // Import Caution.dart
+import 'Caution.dart'; // Ensure Caution.dart is in the same directory or provide the correct path
 
 void main() {
   runApp(const MyApp());
@@ -101,17 +101,16 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.add),
+                    icon: Image.asset('images/img.png'), // Use custom image as icon
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => Caution()), // Navigate to Caution.dart
                       );
-                      // Handle add button press
                     },
                   ),
                   IconButton(
-                    icon: const Icon(Icons.info),
+                    icon: Image.asset('images/img_1.png'), // Use custom image as icon
                     onPressed: () {
 
                     },
