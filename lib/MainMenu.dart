@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     final locData = await location.getLocation();
-    final apiKey = 'YOUR_API_KEY'; // Replace with your OpenWeatherMap API key
+    final apiKey = '003ef1d65597b85d2ab6fa19b59383b6'; // Replace with your OpenWeatherMap API key
     final url =
         'https://api.openweathermap.org/data/2.5/weather?lat=${locData.latitude}&lon=${locData.longitude}&units=metric&appid=$apiKey';
 
