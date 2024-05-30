@@ -41,8 +41,9 @@ class DetailMenu extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 40), // Padding from the top
+              padding: EdgeInsets.only(top: 80), // Padding from the top
               child: Column(
+                mainAxisSize: MainAxisSize.min, // Shrinks the Column to fit its children
                 children: [
                   Center(
                     child: Text(
@@ -60,6 +61,16 @@ class DetailMenu extends StatelessWidget {
                       width: 100, // Adjust as needed
                       height: 100, // Adjust as needed
                       fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
+                    ),
+                  ),
+                  SizedBox(height: 5), // Space between the image and the text
+                  Center(
+                    child: Text(
+                      '45°C', // Text under the image
+                      style: TextStyle(
+                        fontSize: 24, // Adjust as needed
+                        color: Colors.white, // Adjust as needed
+                      ),
                     ),
                   ),
                 ],
