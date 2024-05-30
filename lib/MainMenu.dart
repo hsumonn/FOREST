@@ -101,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: Image.asset('images/img.png'), // Use custom image as icon
+                    icon: Image.asset('images/registration.png'), // Use custom image as icon
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -110,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   ),
                   IconButton(
-                    icon: Image.asset('images/img_1.png'), // Use custom image as icon
+                    icon: Image.asset('images/change.png'), // Use custom image as icon
                     onPressed: () {
 
                     },
