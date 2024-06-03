@@ -4,17 +4,19 @@ void main() => runApp(
   Directionality(
     textDirection: TextDirection.ltr,
     child: Container(
-      color: Color(0xFF79CAE7), // Blue color
-      child: DetailMenu(),
+      color: const Color(0xFF79CAE7), // Blue color
+      child: const DetailMenu(),
     ),
   ),
 );
 
 class DetailMenu extends StatelessWidget {
+  const DetailMenu({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
+      child: SizedBox(
         width: 340, // Adjust as needed
         height: 740, // Adjust as needed
         child: Stack(
@@ -30,7 +32,7 @@ class DetailMenu extends StatelessWidget {
                     height: 40, // Adjust as needed
                     fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
                   ),
-                  SizedBox(width: 8), // Adds space between the images
+                  const SizedBox(width: 8), // Adds space between the images
                   Image.asset(
                     'images/Change.png', // Second image asset path
                     width: 40, // Adjust as needed
@@ -41,11 +43,11 @@ class DetailMenu extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 80), // Padding from the top
+              padding: const EdgeInsets.only(top: 80), // Padding from the top
               child: Column(
                 mainAxisSize: MainAxisSize.min, // Shrinks the Column to fit its children
                 children: [
-                  Center(
+                  const Center(
                     child: Text(
                       '梅田', // Your text
                       style: TextStyle(
@@ -54,7 +56,7 @@ class DetailMenu extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 5), // Space between the text and the image
+                  const SizedBox(height: 5), // Space between the text and the image
                   Center(
                     child: Image.asset(
                       'images/registration.png', // Image asset path for the image under the text
@@ -63,8 +65,8 @@ class DetailMenu extends StatelessWidget {
                       fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
                     ),
                   ),
-                  SizedBox(height: 5), // Space between the image and the text
-                  Center(
+                  const SizedBox(height: 5), // Space between the image and the text
+                  const Center(
                     child: Text(
                       '45°C', // Text under the image
                       style: TextStyle(

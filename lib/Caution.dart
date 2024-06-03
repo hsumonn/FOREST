@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 
 class Caution extends StatelessWidget {
+  const Caution({super.key});
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {

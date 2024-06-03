@@ -38,8 +38,8 @@ void main() {
       Directionality(
         textDirection: TextDirection.ltr,
         child: Container(
-          color: Color(0xFFFFFFFF),
-          child: DetailMenu(),
+          color: const Color(0xFFFFFFFF),
+          child: const DetailMenu(),
         ),
       ),
     );
