@@ -30,7 +30,7 @@ class MyHomePage extends StatelessWidget {
           width: 300,  // 幅を指定
           height: 50,  // 高さを指定
           fit: BoxFit.contain,  // 画像のフィット方法を指定
-          SizedBox(width: 8), // 画像とテキストの間にスペースを追加
+          // SizedBox(width: 8), // 画像とテキストの間にスペースを追加
         )
       ),
 
