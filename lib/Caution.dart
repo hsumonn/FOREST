@@ -95,16 +95,18 @@ class _MyHomePageState extends State<MyHomePage> {
             fit: BoxFit.cover,
           ),
         ),
-        child: const Center(
+        /*child: const SizedBox(
+          height: double.infinity,
+          width: 180,
           child: Text(
-            'ホラーゲームとかに使えそう',
+              'ホラーゲームとかに使えそう',
             style: TextStyle(
-              backgroundColor:Colors.black,
-              color: Colors.white,
-              fontSize: 25,
+                backgroundColor:Colors.black,
+                color: Colors.white,
+                fontSize: 25,
             ),
           ),
-        ),
+        ),*/
       ),
     );
   }
