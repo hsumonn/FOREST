@@ -9,7 +9,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     final locData = await location.getLocation();
-    const apiKey = '003ef1d65597b85d2ab6fa19b59383b6'; // Replace with your OpenWeatherMap API key
+    final apiKey = '003ef1d65597b85d2ab6fa19b59383b6'; // Replace with your OpenWeatherMap API key
     final url =
         'https://api.openweathermap.org/data/2.5/weather?lat=${locData.latitude}&lon=${locData.longitude}&units=metric&appid=$apiKey';
 
@@ -105,12 +105,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const Caution()), // Navigate to Caution.dart
+                        MaterialPageRoute(builder: (context) => Caution()), // Navigate to Caution.dart
                       );
                     },
                   ),
                   IconButton(
-                    icon: Image.asset('images/change.png'), // Use custom image as icon
+                    icon: Image.asset('images/Change.png'), // Use custom image as icon
                     onPressed: () {
 
                     },
