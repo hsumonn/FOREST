@@ -15,6 +15,20 @@ class DetailMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // List of image names
+    final List<String> imageNames = [
+      'light_rain.png',
+      'heavy_rain.png',
+      'sunny.png',
+      'thunder.png',
+      'light_rain.png',
+      'heavy_rain.png',
+      'heavy_rain.png',
+      'heavy_rain.png',
+      'heavy_rain.png',
+      'sunny.png'
+    ];
+
     return Center(
       child: SizedBox(
         width: 340, // Adjust as needed
@@ -56,10 +70,10 @@ class DetailMenu extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 5), // Space between the text and the image
+                  const SizedBox(height: 10), // Space between the text and the image
                   Center(
                     child: Image.asset(
-                      'images/registration.png', // Image asset path for the image under the text
+                      'images/heavy_rain.png', // Image asset path for the image under the text
                       width: 100, // Adjust as needed
                       height: 100, // Adjust as needed
                       fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
@@ -75,6 +89,39 @@ class DetailMenu extends StatelessWidget {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 70), // Space before the new images
+
+                  CustomPaint(
+                    size: const Size(double.infinity, 2), // Adjust height as needed
+                    painter: StraightLinePainter(),
+                  ),
+                  const SizedBox(height: 10), // Space between the line and the images
+                  SizedBox(
+                    height: 80,
+
+                    child: PageView.builder(
+
+                      scrollDirection: Axis.horizontal,
+                      itemCount: imageNames.length, // Total number of images
+                      controller: PageController(viewportFraction: 1/4 ), // Show 4 images at a time without spacing
+                      itemBuilder: (context, index) {
+                        return Container(
+                          //width: MediaQuery.of(context).size.width / 4, // Ensuring 4 images are shown
+                          //margin: EdgeInsets.zero, // No margin between images
+                          child: Image.asset(
+
+                            'images/${imageNames[index]}', // Image asset path
+                            //fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 10), // Space between the images and the line
+                  CustomPaint(
+                    size: const Size(double.infinity, 2), // Adjust height as needed
+                    painter: StraightLinePainter(),
+                  ),
                 ],
               ),
             ),
@@ -83,4 +130,19 @@ class DetailMenu extends StatelessWidget {
       ),
     );
   }
+}
+
+class StraightLinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = size.height
+      ..style = PaintingStyle.stroke;
+
+    canvas.drawLine(Offset(0, size.height / 2), Offset(size.width, size.height / 2), paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
