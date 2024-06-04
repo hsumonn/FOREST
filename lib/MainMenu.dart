@@ -9,7 +9,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,16 +24,25 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _city = '';
-  double _temperature = 0;
-  String _iconUrl = '';
+  List<Map<String, dynamic>> _weatherData = [];
+  Map<String, String> cityToKanji = {
+    'Tokyo': '東京',
+    'Kyoto': '京都',
+    'Osaka': '大阪',
+    'Nagoya': '名古屋',
+    'Sapporo': '札幌',
+    'Fukuoka': '福岡',
+    'Hiroshima': '広島',
+    'Mountain View': '中崎',
+    // Add more cities as needed
+  };
 
   @override
   void initState() {
@@ -43,25 +52,66 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _fetchWeather() async {
     final location = Location();
-    final hasPermission = await location.hasPermission();
+    var hasPermission = await location.hasPermission();
     if (hasPermission == PermissionStatus.denied) {
-      await location.requestPermission();
+      hasPermission = await location.requestPermission();
     }
 
-    final locData = await location.getLocation();
-    const apiKey = '003ef1d65597b85d2ab6fa19b59383b6'; // Replace with your OpenWeatherMap API key
-    final url =
-        'https://api.openweathermap.org/data/2.5/weather?lat=${locData.latitude}&lon=${locData.longitude}&units=metric&appid=$apiKey';
+    if (hasPermission == PermissionStatus.granted) {
+      final locData = await location.getLocation();
+      final apiKey = '003ef1d65597b85d2ab6fa19b59383b6'; // Replace with your OpenWeatherMap API key
+      final url =
+          'https://api.openweathermap.org/data/2.5/weather?lat=${locData.latitude}&lon=${locData.longitude}&units=metric&appid=$apiKey';
 
-    final response = await http.get(Uri.parse(url));
-    final data = json.decode(response.body);
+      final response = await http.get(Uri.parse(url));
+      final data = json.decode(response.body);
 
-    setState(() {
-      _city = data['name'];
-      _temperature = data['main']['temp'];
-      _iconUrl =
-      'http://openweathermap.org/img/wn/${data['weather'][0]['icon']}@2x.png';
-    });
+      setState(() {
+        final now = DateTime.now();
+        final sunset = DateTime.fromMillisecondsSinceEpoch(data['sys']['sunset'] * 1000);
+        final hoursUntilRain = sunset.difference(now).inHours;
+        String cityName = data['name'];
+
+        // Convert city name to Kanji if it exists in the map
+        if (cityToKanji.containsKey(cityName)) {
+          cityName = cityToKanji[cityName]!;
+        }
+
+        _weatherData.add({
+          'city': cityName,
+          'iconUrl': 'http://openweathermap.org/img/wn/${data['weather'][0]['icon']}@2x.png',
+          'isRain': data['weather'][0]['main'].toLowerCase().contains('rain'),
+          'rainTime': data['weather'][0]['main'].toLowerCase().contains('rain')
+              ? '${hoursUntilRain}時間後-雨'
+              : '晴れ',
+        });
+      });
+    }
+  }
+
+  Widget _buildWeatherInfo(Map<String, dynamic> weather) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text(
+          weather['city'],
+          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Caution()),
+            );
+          },
+          child: Image.network(weather['iconUrl']),
+        ),
+        Text(
+          weather['rainTime'],
+          style: const TextStyle(fontSize: 20, color: Colors.white),
+        ),
+      ],
+    );
   }
 
   @override
@@ -78,20 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    if (_city.isNotEmpty) ...[
-                      Image.network(_iconUrl),
-                      Text(
-                        '$_city, ${_temperature.toStringAsFixed(1)}°C',
-                        style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: _fetchWeather,
-                      child: const Text('Refresh Weather'),
-                    ),
-                  ],
+                  children: _weatherData.map((weather) => _buildWeatherInfo(weather)).toList(),
                 ),
               ),
             ),
@@ -105,14 +142,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const Caution()), // Navigate to Caution.dart
+                        MaterialPageRoute(builder: (context) => Caution()), // Navigate to Caution.dart
                       );
                     },
                   ),
                   IconButton(
                     icon: Image.asset('images/Change.png'), // Use custom image as icon
                     onPressed: () {
-
+                      // Add your code here for the Change button
                     },
                   ),
                 ],

@@ -52,6 +52,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
   //int _counter = 0;
 
   /*void _incrementCounter() {
@@ -80,16 +81,35 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          color: Colors.black,
-          image: DecorationImage(
-            image: AssetImage(
-                'images/rain_house.gif'),
-            fit: BoxFit.cover,
+    return Stack(
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+            color: Colors.black,
+            image: DecorationImage(
+              image: AssetImage(
+                  'images/rain_house.gif'),
+              fit: BoxFit.cover,
+            ),
           ),
         ),
+        Container(// 横幅
+          width: 200,
+          // 縦幅
+          height: 500,
+          decoration: const BoxDecoration(
+            color: Colors.black38
+          ),
+          child: const Text(
+            "Hello Flutter!",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: Colors.black),
+            )
+          ),
+        ],
+      );
         /*child: const SizedBox(
           height: double.infinity,
           width: 180,
@@ -102,7 +122,5 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         ),*/
-      ),
-    );
   }
 }
