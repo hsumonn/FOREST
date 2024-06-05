@@ -77,10 +77,22 @@ class _MyHomePageState extends State<MyHomePage> {
           cityName = cityToKanji[cityName]!;
         }
 
+        String iconUrl;
+        if (data['weather'][0]['main'].toLowerCase().contains('rain')) {
+          iconUrl = 'images/heavy_rain.png';
+        } else {
+          if (now.hour >= 18 || now.hour <= 5) {
+            iconUrl = 'images/clearnight.png';
+          } else if (now.hour > 5 && now.hour < 18) {
+            iconUrl = 'images/sunny.png';
+          } else {
+            iconUrl = 'images/light_rain.png';
+          }
+        }
+
         _weatherData.add({
           'city': cityName,
-          'iconUrl': 'http://openweathermap.org/img/wn/${data['weather'][0]['icon']}@2x.png',
-          'isRain': data['weather'][0]['main'].toLowerCase().contains('rain'),
+          'iconUrl': iconUrl,
           'rainTime': data['weather'][0]['main'].toLowerCase().contains('rain')
               ? '${hoursUntilRain}時間後-雨'
               : '晴れ',
@@ -95,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
       children: <Widget>[
         Text(
           weather['city'],
-          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+          style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         GestureDetector(
           onTap: () {
@@ -104,11 +116,15 @@ class _MyHomePageState extends State<MyHomePage> {
               MaterialPageRoute(builder: (context) => Caution()),
             );
           },
-          child: Image.network(weather['iconUrl']),
+          child: Image.asset(
+            weather['iconUrl'],
+            width: 120, // Adjust image width
+            height: 120, // Adjust image height
+          ),
         ),
         Text(
           weather['rainTime'],
-          style: const TextStyle(fontSize: 20, color: Colors.white),
+          style: const TextStyle(fontSize: 24, color: Colors.white),
         ),
       ],
     );
