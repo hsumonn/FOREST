@@ -20,7 +20,7 @@ class DetailMenu extends StatelessWidget {
       'light_rain_noon.png',
       'heavy_rain.png',
       'sunny.png',
-      'thunder.png',
+      'sunny.png',
       'light_rain_noon.png',
       'heavy_rain.png',
       'heavy_rain.png',
@@ -90,7 +90,7 @@ class DetailMenu extends StatelessWidget {
                 const SizedBox(height: 70), // Space before the new images
 
                 CustomPaint(
-                  size: const Size(double.infinity, 2), // Adjust height as needed
+                  size: const Size(double.infinity, 3), // Adjust height as needed
                   painter: StraightLinePainter(),
                 ),
                 const SizedBox(height: 10), // Space between the line and the images
@@ -136,7 +136,7 @@ class DetailMenu extends StatelessWidget {
                 ),
                 const SizedBox(height: 1), // Space between the images and the line
                 CustomPaint(
-                  size: const Size(double.infinity, 2), // Adjust height as needed
+                  size: const Size(double.infinity, 3), // Adjust height as needed
                   painter: StraightLinePainter(),
                 ),
               ],
