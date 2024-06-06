@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 void main(){
-  runApp(const Caution());
+  runApp(Caution());
 }
 
 class Caution extends StatelessWidget {
