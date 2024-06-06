@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 
 
 void main() {
-  runApp(MyApp());
+  runApp(RegistrationMenu());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class RegistrationMenu extends StatelessWidget {
+  const RegistrationMenu({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,7 +30,7 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         //ここにタイトル
           title: Image.asset(
-            'logo_test.png',
+            './images/logo_test.png',
             width: 100,  // 幅を指定
             height: 50,  // 高さを指定
             //fit: BoxFit.contain,  // 画像のフィット方法を指定
@@ -44,7 +44,12 @@ class MyHomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
 
-          Text('test',),
+          Text(
+            '登録画面',
+            style: TextStyle(
+              fontSize: 30, // サイズを変更
+            ),
+          ),
 
             TextFormField(
               decoration: InputDecoration(
