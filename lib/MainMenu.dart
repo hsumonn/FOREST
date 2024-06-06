@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
-import 'DetailMenu.dart'; // Ensure DetailMenu.dart is in the same directory or provide the correct path
-import 'Caution.dart'; // Ensure Caution.dart is in the same directory or provide the correct path
+import 'Caution.dart'; // Import Caution.dart or provide the correct path
+import 'DetailMenu.dart'; // Import DetailMenu.dart or provide the correct path
+import 'RegistrationMenu.dart'; // Import RegistrationMenu.dart or provide the correct path
 
 void main() {
   runApp(const MyApp());
@@ -54,13 +55,25 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _fetchWeather() async {
     final location = Location();
-    var hasPermission = await location.hasPermission();
-    if (hasPermission == PermissionStatus.denied) {
-      hasPermission = await location.requestPermission();
+    LocationData? locData;
+    PermissionStatus? hasPermission;
+
+    try {
+      hasPermission = await location.hasPermission();
+      if (hasPermission == null) {
+        hasPermission = PermissionStatus.denied;
+      } else if (hasPermission == PermissionStatus.denied) {
+        hasPermission = await location.requestPermission();
+      }
+
+      if (hasPermission == PermissionStatus.granted) {
+        locData = await location.getLocation();
+      }
+    } catch (e) {
+      print('Error fetching location: $e');
     }
 
-    if (hasPermission == PermissionStatus.granted) {
-      final locData = await location.getLocation();
+    if (locData != null) {
       final apiKey = '003ef1d65597b85d2ab6fa19b59383b6'; // Replace with your OpenWeatherMap API key
       final url =
           'https://api.openweathermap.org/data/2.5/weather?lat=${locData.latitude}&lon=${locData.longitude}&units=metric&appid=$apiKey';
@@ -165,7 +178,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   IconButton(
                     icon: Image.asset('images/Change.png'), // Use custom image as icon
                     onPressed: () {
-                      // Add your code here for the Change button
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Caution()), // Navigate to Caution.dart
+                      );
                     },
                   ),
                 ],
