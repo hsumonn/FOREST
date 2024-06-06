@@ -81,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
         String iconUrl;
         if (data['weather'][0]['main'].toLowerCase().contains('rain')) {
           if (data['weather'][0]['description'].toLowerCase().contains('light')) {
-            iconUrl = 'images/light_rain.png';
+            iconUrl = 'images/light_rain_noon.png';
           } else {
             iconUrl = 'images/heavy_rain.png';
           }
