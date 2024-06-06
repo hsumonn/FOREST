@@ -11,7 +11,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,14 +27,14 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Map<String, dynamic>> _weatherData = [];
+  final List<Map<String, dynamic>> _weatherData = [];
   Map<String, String> cityToKanji = {
     'Tokyo': '東京',
     'Kyoto': '京都',
@@ -60,11 +60,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     try {
       hasPermission = await location.hasPermission();
-      if (hasPermission == null) {
-        hasPermission = PermissionStatus.denied;
-      } else if (hasPermission == PermissionStatus.denied) {
-        hasPermission = await location.requestPermission();
-      }
+      if (hasPermission == PermissionStatus.denied) {
+      hasPermission = await location.requestPermission();
+    }
 
       if (hasPermission == PermissionStatus.granted) {
         locData = await location.getLocation();
@@ -74,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     if (locData != null) {
-      final apiKey = '003ef1d65597b85d2ab6fa19b59383b6'; // Replace with your OpenWeatherMap API key
+      const apiKey = '003ef1d65597b85d2ab6fa19b59383b6'; // Replace with your OpenWeatherMap API key
       final url =
           'https://api.openweathermap.org/data/2.5/weather?lat=${locData.latitude}&lon=${locData.longitude}&units=metric&appid=$apiKey';
 

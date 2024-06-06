@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 
 void main() {
-  runApp(RegistrationMenu());
+  runApp(const RegistrationMenu());
 }
 
 class RegistrationMenu extends StatelessWidget {
@@ -16,12 +16,14 @@ class RegistrationMenu extends StatelessWidget {
       theme: ThemeData(
       primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatelessWidget {
+  const MyHomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +46,7 @@ class MyHomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
 
-          Text(
+          const Text(
             '登録画面',
             style: TextStyle(
               fontSize: 30, // サイズを変更
@@ -52,13 +54,13 @@ class MyHomePage extends StatelessWidget {
           ),
 
             TextFormField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: '現在位置',
               ),
             ),
 
             TextFormField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: '目的地',
               ),
 
