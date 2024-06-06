@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.ltr,
-      child: Container(
+      child: ColoredBox(
         color: const Color(0xFF79CAE7), // Blue color
         child: const DetailMenu(),
       ),
     );
   }
 }
+
 
 class DetailMenu extends StatelessWidget {
   const DetailMenu({super.key});
