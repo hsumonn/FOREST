@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: ColoredBox(
-        color: const Color(0xFF79CAE7), // Blue color
+        color: const Color(0xFF79CAE7),
         child: const DetailMenu(),
       ),
     );
@@ -115,24 +115,24 @@ class DetailMenu extends StatelessWidget {
                         return Column(
                           children: [
                             Text(
-                              'Text ${index + 1}', // Sample text before the image
+                              ' ${index + 1} pm', // Sample text before the image
                               style: const TextStyle(
-                                fontSize: 12, // Adjust as needed
+                                fontSize: 15, // Adjust as needed
                                 color: Colors.white, // Adjust as needed
                               ),
                             ),
                             const SizedBox(height: 4), // Space between the text and the image
                             Image.asset(
                               'images/${imageNames[index]}', // Image asset path
-                              width: 80, // Ensuring each image has a fixed width
-                              height: 80, // Ensuring each image has a fixed height
+                              width: 75,
+                              height: 75,
                               fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
                             ),
                             const SizedBox(height: 4), // Space between the image and the text
                             Text(
-                              'Text ${index + 1}', // Sample text under the image
+                              '${index + 1} °C', // Sample text under the image
                               style: const TextStyle(
-                                fontSize: 12, // Adjust as needed
+                                fontSize: 15, // Adjust as needed
                                 color: Colors.white, // Adjust as needed
                               ),
                             ),
