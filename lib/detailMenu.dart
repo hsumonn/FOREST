@@ -26,6 +26,8 @@ class DetailMenu extends StatelessWidget {
       'heavy_rain.png',
       'heavy_rain.png',
       'heavy_rain.png',
+      'sunny.png',
+      'sunny.png',
       'sunny.png'
     ];
 
