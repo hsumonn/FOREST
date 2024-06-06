@@ -69,6 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         final now = DateTime.now();
         final sunset = DateTime.fromMillisecondsSinceEpoch(data['sys']['sunset'] * 1000);
+        final sunrise = DateTime.fromMillisecondsSinceEpoch(data['sys']['sunrise'] * 1000);
         final hoursUntilRain = sunset.difference(now).inHours;
         String cityName = data['name'];
 
@@ -79,20 +80,23 @@ class _MyHomePageState extends State<MyHomePage> {
 
         String iconUrl;
         if (data['weather'][0]['main'].toLowerCase().contains('rain')) {
-          iconUrl = 'images/heavy_rain.png';
+          if (data['weather'][0]['description'].toLowerCase().contains('light')) {
+            iconUrl = 'images/light_rain.png';
+          } else {
+            iconUrl = 'images/heavy_rain.png';
+          }
         } else {
-          if (now.hour >= 18 || now.hour <= 5) {
-            iconUrl = 'images/clearnight.png';
-          } else if (now.hour > 5 && now.hour < 18) {
+          if (now.isAfter(sunrise) && now.isBefore(sunset)) {
             iconUrl = 'images/sunny.png';
           } else {
-            iconUrl = 'images/light_rain.png';
+            iconUrl = 'images/clearnight.png';
           }
         }
 
         _weatherData.add({
           'city': cityName,
           'iconUrl': iconUrl,
+          'isRain': data['weather'][0]['main'].toLowerCase().contains('rain'),
           'rainTime': data['weather'][0]['main'].toLowerCase().contains('rain')
               ? '${hoursUntilRain}時間後-雨'
               : '晴れ',
@@ -107,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
       children: <Widget>[
         Text(
           weather['city'],
-          style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white),
+          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         GestureDetector(
           onTap: () {
@@ -118,13 +122,13 @@ class _MyHomePageState extends State<MyHomePage> {
           },
           child: Image.asset(
             weather['iconUrl'],
-            width: 120, // Adjust image width
-            height: 120, // Adjust image height
+            width: 150, // Adjust the width as needed
+            height: 150, // Adjust the height as needed
           ),
         ),
         Text(
           weather['rainTime'],
-          style: const TextStyle(fontSize: 24, color: Colors.white),
+          style: const TextStyle(fontSize: 20, color: Colors.white),
         ),
       ],
     );
