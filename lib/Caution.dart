@@ -95,8 +95,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       child: SizedBox(
-        height: 100,
-        width: 100,
         child: Container(
           //margin: const EdgeInsets.all(48),
           margin: const EdgeInsets.only(
