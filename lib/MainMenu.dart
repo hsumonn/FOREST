@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
+import 'DetailMenu.dart'; // Ensure DetailMenu.dart is in the same directory or provide the correct path
 import 'Caution.dart'; // Ensure Caution.dart is in the same directory or provide the correct path
 
 void main() {
@@ -14,6 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         useMaterial3: true,
@@ -111,13 +113,13 @@ class _MyHomePageState extends State<MyHomePage> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Caution()),
+              MaterialPageRoute(builder: (context) => const DetailMenu()),
             );
           },
           child: Image.asset(
             weather['iconUrl'],
-            width: 165, // Set desired width
-            height: 165, // Set desired height
+            width: 160,
+            height: 160,
           ),
         ),
         Text(
@@ -156,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Caution()), // Navigate to Caution.dart
+                        MaterialPageRoute(builder: (context) => const Caution()), // Navigate to Caution.dart
                       );
                     },
                   ),
