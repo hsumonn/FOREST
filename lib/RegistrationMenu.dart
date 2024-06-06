@@ -1,66 +1,72 @@
 //sample cord
 import 'package:flutter/material.dart';
 
+
 void main() {
-  runApp(const MyApp());
+  runApp(RegistrationMenu());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+class RegistrationMenu extends StatelessWidget {
+  const RegistrationMenu({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,  //右上のデバッグ帯を削除する
+      title: 'Registration menu',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+      primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(),
+      home: MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
+class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
+      //ヘッダー
       appBar: AppBar(
-        title: const Text('Flutter Demo Home Page'),
+        //ここにタイトル
+          title: Image.asset(
+            './images/logo_test.png',
+            width: 100,  // 幅を指定
+            height: 50,  // 高さを指定
+            //fit: BoxFit.contain,  // 画像のフィット方法を指定
+          )
       ),
+
+      //ボディ
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'ここに表示されるテキストが入るよ！',
+
+          Text(
+            '登録画面',
+            style: TextStyle(
+              fontSize: 30, // サイズを変更
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium, // 修正しました
+          ),
+
+            TextFormField(
+              decoration: InputDecoration(
+                labelText: '現在位置',
+              ),
+            ),
+
+            TextFormField(
+              decoration: InputDecoration(
+                labelText: '目的地',
+              ),
+
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+
     );
   }
 }

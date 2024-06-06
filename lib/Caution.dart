@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+void main(){
+  runApp(Caution());
+}
 
 class Caution extends StatelessWidget {
   const Caution({super.key});
@@ -8,6 +11,7 @@ class Caution extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
@@ -75,41 +79,45 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return Stack(
-      children: [
-        Container(
-          decoration: const BoxDecoration(
-            color: Colors.black,
-            image: DecorationImage(
-              image: AssetImage(
-                  'images/rain_house.gif'),
-              fit: BoxFit.cover,
+    return Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage(
+              'images/rain_house.gif'),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: SizedBox(
+        child: Container(
+          //margin: const EdgeInsets.all(48),
+          margin: const EdgeInsets.only(
+            left: 20,
+            top: 400,
+            right: 20,
+            bottom: 300,
+          ),
+          padding: const EdgeInsets.all(25.0),
+          decoration: BoxDecoration(
+            color: Colors.black38,
+            borderRadius: BorderRadius.circular(30.0),
+          ),
+          child: const Center(child: Text(
+            '\t\t\t\t\t\t\t\t\t\t\t\t\t☔\n⚠ 本日、大阪府～○○県との間で大雨振る予定あり。\n大きい傘を持っていきましょう.',
+            style: TextStyle(
+                decoration: TextDecoration.none,fontSize: 18,color: Colors.white70,
+            ),
             ),
           ),
         ),
-        Container(// 横幅
-          width: 200,
-          // 縦幅
-          height: 500,
-          decoration: const BoxDecoration(
-            color: Colors.black38
-          ),
-          child: const Text(
-            "Hello Flutter!",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: Colors.black),
-            )
-          ),
-        ],
-      );
+      ),
+    );
         /*child: const SizedBox(
           height: double.infinity,
           width: 180,
