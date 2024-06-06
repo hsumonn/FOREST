@@ -31,8 +31,8 @@ class MyHomePage extends StatelessWidget {
         //ここにタイトル
           title: Image.asset(
             './images/logo_test.png',
-            // width: 100,  // 幅を指定
-            // height: 50,  // 高さを指定
+            width: 100,  // 幅を指定
+            height: 50,  // 高さを指定
             //fit: BoxFit.contain,  // 画像のフィット方法を指定
           )
       ),
@@ -44,7 +44,12 @@ class MyHomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
 
-          Text('登録画面'),
+          Text(
+            '登録画面',
+            style: TextStyle(
+              fontSize: 30, // サイズを変更
+            ),
+          ),
 
             TextFormField(
               decoration: InputDecoration(
