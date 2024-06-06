@@ -17,11 +17,11 @@ class DetailMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     // List of image names
     final List<String> imageNames = [
-      'light_rain.png',
+      'light_rain_noon.png',
       'heavy_rain.png',
       'sunny.png',
       'thunder.png',
-      'light_rain.png',
+      'light_rain_noon.png',
       'heavy_rain.png',
       'heavy_rain.png',
       'heavy_rain.png',
