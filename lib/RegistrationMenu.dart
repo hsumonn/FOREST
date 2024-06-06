@@ -9,9 +9,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Simple Text Display',
+      debugShowCheckedModeBanner: false,  //右上のデバッグ帯を削除する
+      title: 'Registration menu',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+      primarySwatch: Colors.blue,
       ),
       home: MyHomePage(),
     );
@@ -22,8 +23,9 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
 
+      //ヘッダー
+      appBar: AppBar(
         //ここにタイトル
           title: Image.asset(
             'images/logo_test.png',
@@ -33,13 +35,14 @@ class MyHomePage extends StatelessWidget {
           )
       ),
 
+      //ボディ
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
 
-          Text('目的地登録',),
+          Text('test',),
 
             TextFormField(
               decoration: InputDecoration(
