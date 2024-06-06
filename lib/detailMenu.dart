@@ -32,28 +32,30 @@ class DetailMenu extends StatelessWidget {
     return SizedBox(
       width: 340, // Adjust as needed
       height: 740, // Adjust as needed
-
       child: Stack(
         children: [
-          Align(
-            alignment: Alignment.topRight,
-            child: Row(
-              mainAxisSize: MainAxisSize.min, // Shrinks the Row to fit its children
-              children: [
-                Image.asset(
-                  'images/registration.png', // First image asset path
-                  width: 40, // Adjust as needed
-                  height: 40, // Adjust as needed
-                  fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
-                ),
-                const SizedBox(width: 8), // Adds space between the images
-                Image.asset(
-                  'images/Change.png', // Second image asset path
-                  width: 40, // Adjust as needed
-                  height: 40, // Adjust as needed
-                  fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
-                ),
-              ],
+          Padding(
+            padding: const EdgeInsets.only(top: 20, right: 20), // Added padding
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Row(
+                mainAxisSize: MainAxisSize.min, // Shrinks the Row to fit its children
+                children: [
+                  Image.asset(
+                    'images/registration.png', // First image asset path
+                    width: 40, // Adjust as needed
+                    height: 40, // Adjust as needed
+                    fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
+                  ),
+                  const SizedBox(width: 8), // Adds space between the images
+                  Image.asset(
+                    'images/Change.png', // Second image asset path
+                    width: 40, // Adjust as needed
+                    height: 40, // Adjust as needed
+                    fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
+                  ),
+                ],
+              ),
             ),
           ),
           Padding(
