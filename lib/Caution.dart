@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+void main(){
+  runApp(Caution());
+}
 
 class Caution extends StatelessWidget {
   const Caution({super.key});
