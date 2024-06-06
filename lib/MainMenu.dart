@@ -68,9 +68,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
       setState(() {
         final now = DateTime.now();
-        final sunset = DateTime.fromMillisecondsSinceEpoch(data['sys']['sunset'] * 1000);
         final sunrise = DateTime.fromMillisecondsSinceEpoch(data['sys']['sunrise'] * 1000);
-        final hoursUntilRain = sunset.difference(now).inHours;
+        final sunset = DateTime.fromMillisecondsSinceEpoch(data['sys']['sunset'] * 1000);
+        final isDayTime = now.isAfter(sunrise) && now.isBefore(sunset);
+        final weatherDescription = data['weather'][0]['description'].toLowerCase();
         String cityName = data['name'];
 
         // Convert city name to Kanji if it exists in the map
@@ -79,27 +80,20 @@ class _MyHomePageState extends State<MyHomePage> {
         }
 
         String iconUrl;
-        if (data['weather'][0]['main'].toLowerCase().contains('rain')) {
-          if (data['weather'][0]['description'].toLowerCase().contains('light')) {
-            iconUrl = 'images/light_rain_noon.png';
+        if (weatherDescription.contains('rain')) {
+          if (weatherDescription.contains('light')) {
+            iconUrl = isDayTime ? 'images/light_rain_noon.png' : 'images/light_rain_night.png';
           } else {
             iconUrl = 'images/heavy_rain.png';
           }
         } else {
-          if (now.isAfter(sunrise) && now.isBefore(sunset)) {
-            iconUrl = 'images/sunny.png';
-          } else {
-            iconUrl = 'images/clearnight.png';
-          }
+          iconUrl = isDayTime ? 'images/sunny.png' : 'images/clearnight.png';
         }
 
         _weatherData.add({
           'city': cityName,
           'iconUrl': iconUrl,
-          'isRain': data['weather'][0]['main'].toLowerCase().contains('rain'),
-          'rainTime': data['weather'][0]['main'].toLowerCase().contains('rain')
-              ? '${hoursUntilRain}時間後-雨'
-              : '晴れ',
+          'rainTime': weatherDescription.contains('rain') ? '雨' : '晴れ',
         });
       });
     }
@@ -111,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
       children: <Widget>[
         Text(
           weather['city'],
-          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+          style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         GestureDetector(
           onTap: () {
@@ -122,13 +116,13 @@ class _MyHomePageState extends State<MyHomePage> {
           },
           child: Image.asset(
             weather['iconUrl'],
-            width: 150, // Adjust the width as needed
-            height: 150, // Adjust the height as needed
+            width: 165, // Set desired width
+            height: 165, // Set desired height
           ),
         ),
         Text(
           weather['rainTime'],
-          style: const TextStyle(fontSize: 20, color: Colors.white),
+          style: const TextStyle(fontSize: 25, color: Colors.white),
         ),
       ],
     );

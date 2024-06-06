@@ -59,7 +59,14 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - images/
+    - images/registration.png
+    - images/Change.png
+    - images/heavy_rain.png
+    - images/sunny.png
+    - images/clearnight.png
+    - images/light_rain_noon.png
+    - images/light_rain_night.png
+
 
   # To add assets to your application, add an assets section, like this:
   # assets:
