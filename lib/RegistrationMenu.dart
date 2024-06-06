@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 
 
 void main() {
-  runApp(MyApp());
+  runApp(RegistrationMenu());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class RegistrationMenu extends StatelessWidget {
+  const RegistrationMenu({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
