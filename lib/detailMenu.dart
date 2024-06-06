@@ -26,34 +26,38 @@ class DetailMenu extends StatelessWidget {
       'heavy_rain.png',
       'heavy_rain.png',
       'heavy_rain.png',
+      'sunny.png',
+      'sunny.png',
       'sunny.png'
     ];
 
     return SizedBox(
       width: 340, // Adjust as needed
       height: 740, // Adjust as needed
-
       child: Stack(
         children: [
-          Align(
-            alignment: Alignment.topRight,
-            child: Row(
-              mainAxisSize: MainAxisSize.min, // Shrinks the Row to fit its children
-              children: [
-                Image.asset(
-                  'images/registration.png', // First image asset path
-                  width: 40, // Adjust as needed
-                  height: 40, // Adjust as needed
-                  fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
-                ),
-                const SizedBox(width: 8), // Adds space between the images
-                Image.asset(
-                  'images/Change.png', // Second image asset path
-                  width: 40, // Adjust as needed
-                  height: 40, // Adjust as needed
-                  fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
-                ),
-              ],
+          Padding(
+            padding: const EdgeInsets.only(top: 20, right: 20), // Added padding
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Row(
+                mainAxisSize: MainAxisSize.min, // Shrinks the Row to fit its children
+                children: [
+                  Image.asset(
+                    'images/registration.png', // First image asset path
+                    width: 40, // Adjust as needed
+                    height: 40, // Adjust as needed
+                    fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
+                  ),
+                  const SizedBox(width: 8), // Adds space between the images
+                  Image.asset(
+                    'images/Change.png', // Second image asset path
+                    width: 40, // Adjust as needed
+                    height: 40, // Adjust as needed
+                    fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
+                  ),
+                ],
+              ),
             ),
           ),
           Padding(
@@ -102,13 +106,21 @@ class DetailMenu extends StatelessWidget {
                       itemBuilder: (context, index) {
                         return Column(
                           children: [
+                            Text(
+                              'Text ${index + 1}', // Sample text before the image
+                              style: const TextStyle(
+                                fontSize: 12, // Adjust as needed
+                                color: Colors.white, // Adjust as needed
+                              ),
+                            ),
+                            const SizedBox(height: 4), // Space between the text and the image
                             Image.asset(
                               'images/${imageNames[index]}', // Image asset path
                               width: 80, // Ensuring each image has a fixed width
                               height: 80, // Ensuring each image has a fixed height
                               fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
                             ),
-                            const SizedBox(height: 12), // Space between the image and the text
+                            const SizedBox(height: 4), // Space between the image and the text
                             Text(
                               'Text ${index + 1}', // Sample text under the image
                               style: const TextStyle(
