@@ -30,9 +30,9 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         //ここにタイトル
           title: Image.asset(
-            'logo_test.png',
-            width: 100,  // 幅を指定
-            height: 50,  // 高さを指定
+            './images/logo_test.png',
+            // width: 100,  // 幅を指定
+            // height: 50,  // 高さを指定
             //fit: BoxFit.contain,  // 画像のフィット方法を指定
           )
       ),
@@ -44,7 +44,7 @@ class MyHomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
 
-          Text('test',),
+          Text('登録画面'),
 
             TextFormField(
               decoration: InputDecoration(
