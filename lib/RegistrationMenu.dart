@@ -1,11 +1,13 @@
 //sample cord
 import 'package:flutter/material.dart';
 
+
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -28,7 +30,7 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         //ここにタイトル
           title: Image.asset(
-            'images/logo_test.png',
+            'logo_test.png',
             width: 100,  // 幅を指定
             height: 50,  // 高さを指定
             //fit: BoxFit.contain,  // 画像のフィット方法を指定
