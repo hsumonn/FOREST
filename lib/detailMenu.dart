@@ -9,8 +9,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.ltr,
-      child: ColoredBox(
-        color: const Color(0xFF79CAE7),
+      child: Container(
+        decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: <Color>[Colors.grey,Colors.lightBlueAccent]
+            )
+        ),
         child: const DetailMenu(),
       ),
     );
@@ -23,7 +29,6 @@ class DetailMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // List of image names
     final List<String> imageNames = [
       'light_rain_noon.png',
       'heavy_rain.png',
@@ -40,100 +45,96 @@ class DetailMenu extends StatelessWidget {
     ];
 
     return SizedBox(
-      width: 340, // Adjust as needed
-      height: 740, // Adjust as needed
       child: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 20, right: 20), // Added padding
+            padding: const EdgeInsets.only(top: 30, right: 15),
             child: Align(
               alignment: Alignment.topRight,
               child: Row(
-                mainAxisSize: MainAxisSize.min, // Shrinks the Row to fit its children
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Image.asset(
-                    'images/registration.png', // First image asset path
-                    width: 40, // Adjust as needed
-                    height: 40, // Adjust as needed
-                    fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
+                    'images/registration.png',
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.cover,
                   ),
-                  const SizedBox(width: 8), // Adds space between the images
+                  const SizedBox(width: 8),
                   Image.asset(
-                    'images/Change.png', // Second image asset path
-                    width: 40, // Adjust as needed
-                    height: 40, // Adjust as needed
-                    fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
+                    'images/Change.png',
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.cover,
                   ),
                 ],
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 80), // Padding from the top
+            padding: const EdgeInsets.only(top: 80),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center, // Aligns children in the center horizontally
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Text(
-                  '梅田', // Your text
+                  '梅田',
                   style: TextStyle(
-                    fontSize: 24, // Adjust as needed
-                    color: Colors.white, // Adjust as needed
+                    fontSize: 28,
+                    color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 10), // Space between the text and the image
+                const SizedBox(height: 10),
                 Image.asset(
-                  'images/heavy_rain.png', // Image asset path for the image under the text
-                  width: 100, // Adjust as needed
-                  height: 100, // Adjust as needed
-                  fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
+                  'images/heavy_rain.png',
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
                 ),
-                const SizedBox(height: 5), // Space between the image and the text
+                const SizedBox(height: 5),
                 const Text(
-                  '45°C', // Text under the image
+                  '45°C',
                   style: TextStyle(
-                    fontSize: 24, // Adjust as needed
-                    color: Colors.white, // Adjust as needed
+                    fontSize: 24,
+                    color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 70), // Space before the new images
-
+                const SizedBox(height: 70),
                 CustomPaint(
-                  size: const Size(double.infinity, 3), // Adjust height as needed
+                  size: const Size(double.infinity, 3),
                   painter: StraightLinePainter(),
                 ),
-                const SizedBox(height: 10), // Space between the line and the images
+                const SizedBox(height: 10),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: SizedBox(
-                    height: 120, // Adjust height as needed
-                    // Adjust width as needed
+                    height: 120,
                     child: PageView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: imageNames.length, // Total number of images
-                      controller: PageController(initialPage: 2, viewportFraction: 0.2), // Show 5 images at a time without spacing
+                      itemCount: imageNames.length,
+                      controller: PageController(initialPage: 2, viewportFraction: 0.2),
                       itemBuilder: (context, index) {
                         return Column(
                           children: [
                             Text(
-                              ' ${index + 1} pm', // Sample text before the image
+                              ' ${index + 1} pm',
                               style: const TextStyle(
-                                fontSize: 15, // Adjust as needed
-                                color: Colors.white, // Adjust as needed
+                                fontSize: 15,
+                                color: Colors.white,
                               ),
                             ),
-                            const SizedBox(height: 4), // Space between the text and the image
+                            const SizedBox(height: 4),
                             Image.asset(
-                              'images/${imageNames[index]}', // Image asset path
+                              'images/${imageNames[index]}',
                               width: 75,
                               height: 75,
-                              fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
+                              fit: BoxFit.cover,
                             ),
-                            const SizedBox(height: 4), // Space between the image and the text
+                            const SizedBox(height: 4),
                             Text(
-                              '${index + 1} °C', // Sample text under the image
+                              '${index + 1} °C',
                               style: const TextStyle(
-                                fontSize: 15, // Adjust as needed
-                                color: Colors.white, // Adjust as needed
+                                fontSize: 15,
+                                color: Colors.white,
                               ),
                             ),
                           ],
@@ -142,9 +143,9 @@ class DetailMenu extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 1), // Space between the images and the line
+                const SizedBox(height: 1),
                 CustomPaint(
-                  size: const Size(double.infinity, 3), // Adjust height as needed
+                  size: const Size(double.infinity, 3),
                   painter: StraightLinePainter(),
                 ),
               ],
