@@ -169,15 +169,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const Caution()), // Navigate to Caution.dart
-                      );
-                    },
-                  ),
-                  IconButton(
-                    icon: Image.asset('images/Change.png'), // Use custom image as icon
-                    onPressed: () {
-                      Navigator.push(
-                        context,
                         MaterialPageRoute(builder: (context) => const RegistrationMenu()), // Navigate to Caution.dart
                       );
                     },
