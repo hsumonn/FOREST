@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
-import 'Caution.dart'; // Import Caution.dart or provide the correct path
-import 'DetailMenu.dart'; // Import DetailMenu.dart or provide the correct path
-import 'RegistrationMenu.dart'; // Import RegistrationMenu.dart or provide the correct path
+import 'package:logger/logger.dart';
+import 'detail_menu.dart'; // Import DetailMenu.dart or provide the correct path
+import 'registration_menu.dart'; // Import registration_menu.dart or provide the correct path
 
 void main() {
   runApp(const MyApp());
@@ -35,7 +35,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<Map<String, dynamic>> _weatherData = [];
-  Map<String, String> cityToKanji = {
+  final Logger _logger = Logger();
+  final Map<String, String> cityToKanji = {
     'Tokyo': '東京',
     'Kyoto': '京都',
     'Osaka': '大阪',
@@ -61,14 +62,14 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       hasPermission = await location.hasPermission();
       if (hasPermission == PermissionStatus.denied) {
-      hasPermission = await location.requestPermission();
-    }
+        hasPermission = await location.requestPermission();
+      }
 
       if (hasPermission == PermissionStatus.granted) {
         locData = await location.getLocation();
       }
     } catch (e) {
-      print('Error fetching location: $e');
+      _logger.e('Error fetching location:', e);
     }
 
     if (locData != null) {
@@ -169,7 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const RegistrationMenu()), // Navigate to Caution.dart
+                        MaterialPageRoute(builder: (context) => const RegistrationMenu()), // Navigate to RegistrationMenu.dart
                       );
                     },
                   ),
