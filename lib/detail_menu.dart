@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return const Directionality(
-      textDirection: TextDirection.ltr,
-      child: ColoredBox(
-        color: Color(0xFF79CAE7),
-        child: DetailMenu(),
-      ),
+    return Directionality(
+        textDirection: TextDirection.ltr,
+        child: Container(
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: <Color>[Colors.grey,Colors.lightBlueAccent]
+              )
+          ),
+          //color: const Color(0xFF79CAE7), // Blue color
+          child: const DetailMenu(),
+        )
     );
   }
 }
@@ -60,12 +65,12 @@ class DetailMenu extends StatelessWidget {
                     fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
                   ),
                   const SizedBox(width: 8), // Adds space between the images
-                  Image.asset(
-                    'images/Change.png', // Second image asset path
-                    width: 40, // Adjust as needed
-                    height: 40, // Adjust as needed
-                    fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
-                  ),
+                  // Image.asset(
+                  //   'images/Change.png', // Second image asset path
+                  //   width: 40, // Adjust as needed
+                  //   height: 40, // Adjust as needed
+                  //   fit: BoxFit.cover, // Ensures the image covers the entire space allocated by its parent
+                  // ),
                 ],
               ),
             ),
