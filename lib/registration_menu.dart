@@ -75,22 +75,7 @@ class MyHomePage extends StatelessWidget {
               ),
             ),
 
-            ListView(
-              children: <Widget>[
-                ListTile(
-                  leading: Icon(Icons.map),
-                  title: Text('Map'),
-                ),
-                ListTile(
-                  leading: Icon(Icons.photo),
-                  title: Text('Photos'),
-                ),
-                ListTile(
-                  leading: Icon(Icons.phone),
-                  title: Text('Phone'),
-                ),
-              ],
-            )
+
 
           ],
         ),
