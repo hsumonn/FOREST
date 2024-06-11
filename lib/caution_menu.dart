@@ -98,10 +98,10 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Container(
           //margin: const EdgeInsets.all(48),
           margin: const EdgeInsets.only(
-            left: 20,
-            top: 200,
-            right: 20,
-            bottom: 100,
+            left: 5,
+            top: 150,
+            right: 5,
+            bottom: 350,
           ),
           padding: const EdgeInsets.all(25.0),
           decoration: BoxDecoration(
@@ -109,9 +109,9 @@ class _MyHomePageState extends State<MyHomePage> {
             borderRadius: BorderRadius.circular(30.0),
           ),
           child: const Center(child: Text(
-            '\t\t\t\t\t\t\t\t\t\t\t\t\t☔\n⚠ 本日、大阪府～○○県との間で大雨振る予定あり。\n大きい傘を持っていきましょう.',
+            '⚠ 本日、大阪府・○○県\n大雨振る予定あり。',
             style: TextStyle(
-                decoration: TextDecoration.none,fontSize: 18,color: Colors.white70,
+                decoration: TextDecoration.none,fontSize: 32,color: Colors.white70,
             ),
             ),
           ),
