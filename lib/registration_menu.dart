@@ -32,7 +32,7 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         //ここにタイトル
           title: Image.asset(
-            './images/logo_test.png',
+            './images/logo_test.png', //ロゴ（仮置き）
             width: 100,  // 幅を指定
             height: 50,  // 高さを指定
             //fit: BoxFit.contain,  // 画像のフィット方法を指定
@@ -40,7 +40,15 @@ class MyHomePage extends StatelessWidget {
       ),
 
       //ボディ
-      body: Center(
+      body: Container(
+        //背景画像を設定
+        decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('./images/weather_test.jpg'), //ここが画像
+          fit: BoxFit.cover,
+          ),
+        ),
+
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
