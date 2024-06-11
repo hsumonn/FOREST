@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:location/location.dart';
+import 'package:umbrella/registration_menu.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,8 +18,8 @@ class MyApp extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: <Color>[Colors.grey, Colors.lightBlueAccent],
-           //colors: <Color>[Colors.lightBlueAccent, Colors.white],
+            //colors: <Color>[Colors.grey, Colors.lightBlueAccent],
+           colors: <Color>[Colors.lightBlueAccent, Colors.white],
           ),
         ),
         child: const DetailMenu(),
@@ -142,11 +143,19 @@ class _DetailMenuState extends State<DetailMenu> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Image.asset(
-                          'images/registration.png',
-                          width: 40,
-                          height: 40,
-                          fit: BoxFit.cover,
+                        IconButton(
+                          icon: Image.asset(
+                            'images/registration.png',
+                            width: 40,
+                            height: 40,
+                            fit: BoxFit.cover,
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const RegistrationMenu()), // Navigate to RegistrationMenu.dart
+                            );
+                          },
                         ),
                         const SizedBox(width: 8),
                       ],
