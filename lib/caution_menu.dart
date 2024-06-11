@@ -99,9 +99,9 @@ class _MyHomePageState extends State<MyHomePage> {
           //margin: const EdgeInsets.all(48),
           margin: const EdgeInsets.only(
             left: 20,
-            top: 400,
+            top: 200,
             right: 20,
-            bottom: 300,
+            bottom: 100,
           ),
           padding: const EdgeInsets.all(25.0),
           decoration: BoxDecoration(

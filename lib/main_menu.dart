@@ -161,8 +161,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Positioned(
-              top: 20,
-              right: 20,
+              top: 30,
+              right: 10,
               child: Row(
                 children: [
                   IconButton(
