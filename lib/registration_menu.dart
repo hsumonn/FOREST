@@ -14,7 +14,7 @@ class RegistrationMenu extends StatelessWidget {
       debugShowCheckedModeBanner: false,  //右上のデバッグ帯を削除する
       title: 'Registration menu',
       theme: ThemeData(
-      primarySwatch: Colors.blue,
+        primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(),
     );
@@ -41,11 +41,12 @@ class MyHomePage extends StatelessWidget {
 
       //ボディ
       body: Container(
+
         //背景画像を設定
         decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('./images/weather_test.jpg'), //ここが画像
-          fit: BoxFit.cover,
+          image: DecorationImage(
+            image: AssetImage('./images/weather_test.jpg'), //ここが画像
+            fit: BoxFit.cover,
           ),
         ),
 
@@ -54,12 +55,13 @@ class MyHomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
 
-          const Text(
-            '登録画面',
-            style: TextStyle(
-              fontSize: 30, // サイズを変更
+            const Text(
+              '登録画面',
+              style: TextStyle(
+                fontSize: 30, // サイズを変更
+                backgroundColor: Colors.white,
+              ),
             ),
-          ),
 
             TextFormField(
               decoration: const InputDecoration(
@@ -71,8 +73,25 @@ class MyHomePage extends StatelessWidget {
               decoration: const InputDecoration(
                 labelText: '目的地',
               ),
-
             ),
+
+            ListView(
+              children: <Widget>[
+                ListTile(
+                  leading: Icon(Icons.map),
+                  title: Text('Map'),
+                ),
+                ListTile(
+                  leading: Icon(Icons.photo),
+                  title: Text('Photos'),
+                ),
+                ListTile(
+                  leading: Icon(Icons.phone),
+                  title: Text('Phone'),
+                ),
+              ],
+            )
+
           ],
         ),
       ),
