@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 void main() {
   runApp(const RegistrationMenu());
-  runApp(MyApp());
 }
 
 class RegistrationMenu extends StatelessWidget {
@@ -12,57 +11,18 @@ class RegistrationMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,  //右上のデバッグ帯を削除する
       title: 'Registration menu',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
-      //home: const MyHomePage(),
-    );
-  }
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,  //右上のデバッグ帯を削除する
-      title: 'touroku gamen', // アプリ全体のタイトル
-      theme: ThemeData(), // アプリ全体のテーマ
-      home: MyHomePage(), // 最初に表示するウィジェット
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: DropdownExample(),
-      ),
-    );
-  }
-}
-
-class DropdownExample extends StatefulWidget {
-  @override
-  _DropdownExampleState createState() => _DropdownExampleState();
-}
-
-class _DropdownExampleState extends State<DropdownExample> {
-  //_DropdownExampleState({super.key});
-  //const MyHomePage({super.key});
-
-  // // 選択された値を保持する変数
-  // String _selectedValue = '選択してください';
-
-  // // ドロップダウンのアイテムリスト
-  // final List<String> _items = ['選択してください', '月', '火', '水', '木', '金', '土', '日'];
-
-  // 選択されたラジオボタンの値を保持する変数
-  int _selectedValue = 1;
-
+  const MyHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -95,25 +55,21 @@ class _DropdownExampleState extends State<DropdownExample> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
 
-          //一番上に表示するタイトルテキスト
-          //Title text to be displayed at the top
-          const Text(
-            '登録画面',
-            style: TextStyle(
-              fontSize: 30, // サイズを変更
-              color: Colors.white
-              //backgroundColor: Colors.white,  //背景色
+            const Text(
+              '登録画面',
+              style: TextStyle(
+                  fontSize: 30, // サイズを変更
+                  color: Colors.white
+                //backgroundColor: Colors.white,  //背景色
+              ),
             ),
-          ),
 
-          //必要情報入力部分
-          //Required information input section
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
 
-                TextFormField(
+                  TextFormField(
                     decoration: const InputDecoration(
                       hintText: "現在位置",
                       // labelText: '現在位置', //上部にテキストを表示するならこっち
@@ -122,9 +78,9 @@ class _DropdownExampleState extends State<DropdownExample> {
                     ),
                   ),
 
-                SizedBox(height: 16.0), // 2つのテキストフィールド間にスペースを追加
+                  const SizedBox(height: 16.0), // 2つのテキストフィールド間にスペースを追加
 
-                TextFormField(
+                  TextFormField(
                     decoration: const InputDecoration(
                       hintText: "目的地",
                       fillColor: Colors.white,
@@ -132,181 +88,9 @@ class _DropdownExampleState extends State<DropdownExample> {
                     ),
                   ),
 
-                // //曜日のドロップダウンリスト
-                // //Drop-down list of days of the week
-                // DropdownButton<String>(
-                //   value: _selectedValue,
-                //   dropdownColor: Colors.blueAccent, // ドロップダウンリストの背景色を変更
-                //   iconEnabledColor: Colors.white, // ドロップダウンボタンのアイコンの色を変更
-                //   onChanged: (String? newValue) {
-                //     setState(() {
-                //       _selectedValue = newValue!;
-                //     });
-                //   },
-                //   items: _items.map<DropdownMenuItem<String>>((String value) {
-                //     return DropdownMenuItem<String>(
-                //       value: value,
-                //       child: Text(
-                //           value,
-                //           style: TextStyle(color: Colors.white), // ドロップダウンリストのテキスト色を変更
-                //       ),
-                //     );
-                //   }).toList(),
-                //   style: TextStyle(color: Colors.white), // ドロップダウンボタンのテキスト色を変更
-                // ),
-
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-
-                    Container(
-                      color: Colors.blueAccent, // 背景色を設定
-                      padding: const EdgeInsets.all(1.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Radio<int>(
-                            value: 1,
-                            groupValue: _selectedValue,
-                            onChanged: (int? value) {
-                              setState(() {
-                                _selectedValue = value!;
-                              });
-                            },
-                          ),
-                          const Text('日',style: TextStyle(color: Colors.white)),
-                        ],
-                      ),
-                    ),
-
-                    Container(
-                      color: Colors.blueAccent, // 背景色を設定
-                      padding: const EdgeInsets.all(1.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Radio<int>(
-                            value: 2,
-                            groupValue: _selectedValue,
-                            onChanged: (int? value) {
-                              setState(() {
-                                _selectedValue = value!;
-                              });
-                            },
-                          ),
-                          const Text('月',style: TextStyle(color: Colors.white)),
-                        ],
-                      ),
-                    ),
-
-                    Container(
-                      color: Colors.blueAccent, // 背景色を設定
-                      padding: const EdgeInsets.all(1.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Radio<int>(
-                            value: 3,
-                            groupValue: _selectedValue,
-                            onChanged: (int? value) {
-                              setState(() {
-                                _selectedValue = value!;
-                              });
-                            },
-                          ),
-                          const Text('火',style: TextStyle(color: Colors.white)),
-                        ],
-                      ),
-                    ),
-
-                    Container(
-                      color: Colors.blueAccent, // 背景色を設定
-                      padding: const EdgeInsets.all(1.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Radio<int>(
-                            value: 4,
-                            groupValue: _selectedValue,
-                            onChanged: (int? value) {
-                              setState(() {
-                                _selectedValue = value!;
-                              });
-                            },
-                          ),
-                          const Text('水',style: TextStyle(color: Colors.white)),
-                        ],
-                      ),
-                    ),
-
-                    Container(
-                      color: Colors.blueAccent, // 背景色を設定
-                      padding: const EdgeInsets.all(1.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Radio<int>(
-                            value: 5,
-                            groupValue: _selectedValue,
-                            onChanged: (int? value) {
-                              setState(() {
-                                _selectedValue = value!;
-                              });
-                            },
-                          ),
-                          const Text('木',style: TextStyle(color: Colors.white)),
-                        ],
-                      ),
-                    ),
-
-                    Container(
-                      color: Colors.blueAccent, // 背景色を設定
-                      padding: const EdgeInsets.all(1.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Radio<int>(
-                            value: 6,
-                            groupValue: _selectedValue,
-                            onChanged: (int? value) {
-                              setState(() {
-                                _selectedValue = value!;
-                              });
-                            },
-                          ),
-                          const Text('金',style: TextStyle(color: Colors.white)),
-                        ],
-                      ),
-                    ),
-
-                    Container(
-                      color: Colors.blueAccent, // 背景色を設定
-                      padding: const EdgeInsets.all(1.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Radio<int>(
-                            value: 7,
-                            groupValue: _selectedValue,
-                            onChanged: (int? value) {
-                              setState(() {
-                                _selectedValue = value!;
-                              });
-                            },
-                          ),
-                          const Text('土',style: TextStyle(color: Colors.white)),
-                        ],
-                      ),
-                    ),
-
-                  ],
-                ),
-
-
                 ],
               ),
-          ),
+            ),
 
           ],
         ),
@@ -315,47 +99,3 @@ class _DropdownExampleState extends State<DropdownExample> {
     );
   }
 }
-
-// class DropdownButtonMenu extends StatefulWidget {
-//   const DropdownButtonMenu({Key? key}) : super(key: key);
-//
-//   @override
-//   State<DropdownButtonMenu> createState() => _DropdownButtonMenuState();
-// }
-// class _DropdownButtonMenuState extends State<DropdownButtonMenu> {
-//   String isSelectedValue = 'あ';
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return DropdownButton(
-//       items: const[
-//         DropdownMenuItem(
-//           value: 'あ',
-//           child: Text('あ'),
-//         ),
-//         DropdownMenuItem(
-//           value: 'い',
-//           child: Text('い'),
-//         ),
-//         DropdownMenuItem(
-//           value: 'う',
-//           child: Text('う'),
-//         ),
-//         DropdownMenuItem(
-//           value: 'え',
-//           child: Text('え'),
-//         ),
-//         DropdownMenuItem(
-//           value: 'お',
-//           child: Text('お'),
-//         ),
-//       ],
-//       value: isSelectedValue,
-//       onChanged: (String? value) {
-//         setState(() {
-//           isSelectedValue = value!;
-//         });
-//       },
-//     );
-//   }
-// }

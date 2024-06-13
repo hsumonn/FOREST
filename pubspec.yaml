@@ -41,6 +41,9 @@ dependencies:
   cupertino_icons: ^1.0.6
   animated_text_kit: ^4.2.2
 
+  marquee: any
+  flutter_local_notifications: any
+  shared_preferences: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
