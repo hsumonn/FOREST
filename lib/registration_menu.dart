@@ -55,21 +55,21 @@ class MyHomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
 
-          const Text(
-            '登録画面',
-            style: TextStyle(
-              fontSize: 30, // サイズを変更
-              color: Colors.white
-              //backgroundColor: Colors.white,  //背景色
+            const Text(
+              '登録画面',
+              style: TextStyle(
+                  fontSize: 30, // サイズを変更
+                  color: Colors.white
+                //backgroundColor: Colors.white,  //背景色
+              ),
             ),
-          ),
 
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
 
-                TextFormField(
+                  TextFormField(
                     decoration: const InputDecoration(
                       hintText: "現在位置",
                       // labelText: '現在位置', //上部にテキストを表示するならこっち
@@ -78,9 +78,9 @@ class MyHomePage extends StatelessWidget {
                     ),
                   ),
 
-                SizedBox(height: 16.0), // 2つのテキストフィールド間にスペースを追加
+                  SizedBox(height: 16.0), // 2つのテキストフィールド間にスペースを追加
 
-                TextFormField(
+                  TextFormField(
                     decoration: const InputDecoration(
                       hintText: "目的地",
                       fillColor: Colors.white,
@@ -88,9 +88,9 @@ class MyHomePage extends StatelessWidget {
                     ),
                   ),
 
-              ],
+                ],
+              ),
             ),
-          ),
 
           ],
         ),

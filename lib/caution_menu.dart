@@ -59,8 +59,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               child: Marquee(
 
-                text: '本日、大阪と○○県で、雨の予定あり。', // 流れるテキスト
-                style: const TextStyle(color: Colors.white, fontSize: 32,decoration: TextDecoration.none,), // テキストのスタイル
+                text: '本日、大阪府、○○県で、雨の予定あり。 傘をお忘れないように！   ', // 流れるテキスト
+                style: const TextStyle(color: Colors.white, fontSize: 33,decoration: TextDecoration.none,), // テキストのスタイル
                 scrollAxis: Axis.horizontal, // テキストの流れる方向
                 crossAxisAlignment: CrossAxisAlignment.center, // テキストの縦方向の配置
                 blankSpace: 20.0, // テキストがループするときの余白

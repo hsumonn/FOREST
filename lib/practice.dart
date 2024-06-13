@@ -59,8 +59,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               child: Marquee(
 
-                text: '本日、大阪と○○県で、雨の予定あり。', // 流れるテキスト
-                style: const TextStyle(color: Colors.white, fontSize: 32,decoration: TextDecoration.none,), // テキストのスタイル
+                text: '本日、大阪府、○○県で、雨の予定あり。 傘をお忘れないように！   ', // 流れるテキスト
+                style: const TextStyle(color: Colors.white, fontSize: 33,decoration: TextDecoration.none,), // テキストのスタイル
                 scrollAxis: Axis.horizontal, // テキストの流れる方向
                 crossAxisAlignment: CrossAxisAlignment.center, // テキストの縦方向の配置
                 blankSpace: 20.0, // テキストがループするときの余白
@@ -106,25 +106,25 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Container(
               width: 170,
               height: 170,
-                decoration: BoxDecoration(
-                  image: const DecorationImage(
+              decoration: BoxDecoration(
+                image: const DecorationImage(
                   image: AssetImage('images/teeutyan.png'), // 画像のパスを指定
-                    fit: BoxFit.contain,
-                  ),
-                  borderRadius: BorderRadius.circular(10.0),
+                  fit: BoxFit.contain,
                 ),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
             ),
           ),
           Positioned(
-            left: 33,
+            left: 30,
             bottom: 175,
             child: Container(
               width: 222,
               height: 222, // 幅と高さの比率を指
               decoration: BoxDecoration(
                 image: const DecorationImage(
-                  image: AssetImage('images/message.png'), // 画像のパスを指定
-                  fit: BoxFit.contain
+                    image: AssetImage('images/message.png'), // 画像のパスを指定
+                    fit: BoxFit.contain
                 ),
                 borderRadius: BorderRadius.circular(10.0),
               ),
@@ -135,3 +135,4 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
