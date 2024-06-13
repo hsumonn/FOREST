@@ -61,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 style: const TextStyle(decoration: TextDecoration.none, fontSize: 32),
                 child: AnimatedTextKit(
                   animatedTexts: [
-                    TypewriterAnimatedText('\n本日、大阪と○○県で、雨の予定あり。'),
+                    TypewriterAnimatedText('本日、大阪と○○県で、雨の予定あり。'),
                   ],
                 ),
               ),
@@ -78,6 +78,22 @@ class _MyHomePageState extends State<MyHomePage> {
                   decoration: TextDecoration.none,
                   fontSize: 35,
                 ),
+              ),
+            ),
+          ),
+          // 左下に写真を追加
+          Positioned(
+            left: 10,
+            bottom: 10,
+            child: Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                image: const DecorationImage(
+                  image: AssetImage('images/teeutyan.png'), // 画像のパスを指定
+                  fit: BoxFit.cover,
+                ),
+                borderRadius: BorderRadius.circular(10.0),
               ),
             ),
           ),

@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 scrollAxis: Axis.horizontal, // テキストの流れる方向
                 crossAxisAlignment: CrossAxisAlignment.center, // テキストの縦方向の配置
                 blankSpace: 20.0, // テキストがループするときの余白
-                velocity: 999.0, // テキストの速度
+                velocity: 100.0, // テキストの速度
                 pauseAfterRound: const Duration(seconds: 1), // ループ後の一時停止時間
                 startPadding: 10.0, // テキストの開始位置の余白
                 accelerationDuration: const Duration(seconds: 1), // 加速時間
@@ -96,6 +96,37 @@ class _MyHomePageState extends State<MyHomePage> {
                   decoration: TextDecoration.none,
                   fontSize: 35,
                 ),
+              ),
+            ),
+          ),
+
+          Positioned(
+            //left: 5,
+            bottom: 15,
+            child: Container(
+              width: 170,
+              height: 170,
+                decoration: BoxDecoration(
+                  image: const DecorationImage(
+                  image: AssetImage('images/teeutyan.png'), // 画像のパスを指定
+                    fit: BoxFit.contain,
+                  ),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+            ),
+          ),
+          Positioned(
+            left: 50,
+            bottom: 200,
+            child: Container(
+              width: 190,
+              height: 190, // 幅と高さの比率を指
+              decoration: BoxDecoration(
+                image: const DecorationImage(
+                  image: AssetImage('images/message.png'), // 画像のパスを指定
+                  fit: BoxFit.contain
+                ),
+                borderRadius: BorderRadius.circular(10.0),
               ),
             ),
           ),
