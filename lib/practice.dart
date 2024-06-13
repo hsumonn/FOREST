@@ -116,11 +116,11 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           Positioned(
-            left: 50,
-            bottom: 200,
+            left: 33,
+            bottom: 175,
             child: Container(
-              width: 190,
-              height: 190, // 幅と高さの比率を指
+              width: 222,
+              height: 222, // 幅と高さの比率を指
               decoration: BoxDecoration(
                 image: const DecorationImage(
                   image: AssetImage('images/message.png'), // 画像のパスを指定
