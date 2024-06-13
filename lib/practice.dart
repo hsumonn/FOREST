@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:marquee/marquee.dart';
 
 void main() {
   runApp(const Caution());
@@ -56,15 +57,32 @@ class _MyHomePageState extends State<MyHomePage> {
                 color: Colors.black38,
                 borderRadius: BorderRadius.circular(30.0),
               ),
+              child: Marquee(
 
-              child: DefaultTextStyle(
+                text: '本日、大阪と○○県で、雨の予定あり。', // 流れるテキスト
+                style: const TextStyle(color: Colors.white, fontSize: 32,decoration: TextDecoration.none,), // テキストのスタイル
+                scrollAxis: Axis.horizontal, // テキストの流れる方向
+                crossAxisAlignment: CrossAxisAlignment.center, // テキストの縦方向の配置
+                blankSpace: 20.0, // テキストがループするときの余白
+                velocity: 999.0, // テキストの速度
+                pauseAfterRound: const Duration(seconds: 1), // ループ後の一時停止時間
+                startPadding: 10.0, // テキストの開始位置の余白
+                accelerationDuration: const Duration(seconds: 1), // 加速時間
+                accelerationCurve: Curves.linear, // 加速カーブ
+                decelerationDuration: const Duration(milliseconds: 500), // 減速時間
+                decelerationCurve: Curves.easeOut, // 減速カーブ
+              ),
+
+
+
+              /*child: DefaultTextStyle(
                 style: const TextStyle(decoration: TextDecoration.none, fontSize: 32),
                 child: AnimatedTextKit(
                   animatedTexts: [
                     TypewriterAnimatedText('\n本日、大阪と○○県で、雨の予定あり。'),
                   ],
                 ),
-              ),
+              ),*/
             ),
           ),
           const Positioned(
