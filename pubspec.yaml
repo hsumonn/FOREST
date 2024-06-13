@@ -34,7 +34,6 @@ dependencies:
   location: ^4.4.0
   #fl_chart: ^0.40.0
   logger: ^1.1.0
-  marquee: ^2.0.0
 
 
   # The following adds the Cupertino Icons font to your application.
