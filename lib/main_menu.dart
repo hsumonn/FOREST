@@ -2,16 +2,17 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
-import 'Caution.dart'; // Import Caution.dart or provide the correct path
-import 'DetailMenu.dart'; // Import DetailMenu.dart or provide the correct path
-import 'RegistrationMenu.dart'; // Import RegistrationMenu.dart or provide the correct path
+import 'package:logger/logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'detail_menu.dart'; // Import DetailMenu.dart or provide the correct path
+import 'registration_menu.dart'; // Import registration_menu.dart or provide the correct path
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +28,16 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Map<String, dynamic>> _weatherData = [];
-  Map<String, String> cityToKanji = {
+  final List<Map<String, dynamic>> _weatherData = [];
+  final Logger _logger = Logger();
+  final Map<String, String> cityToKanji = {
     'Tokyo': '東京',
     'Kyoto': '京都',
     'Osaka': '大阪',
@@ -60,9 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     try {
       hasPermission = await location.hasPermission();
-      if (hasPermission == null) {
-        hasPermission = PermissionStatus.denied;
-      } else if (hasPermission == PermissionStatus.denied) {
+      if (hasPermission == PermissionStatus.denied) {
         hasPermission = await location.requestPermission();
       }
 
@@ -70,11 +70,11 @@ class _MyHomePageState extends State<MyHomePage> {
         locData = await location.getLocation();
       }
     } catch (e) {
-      print('Error fetching location: $e');
+      _logger.e('Error fetching location:', e);
     }
 
     if (locData != null) {
-      final apiKey = '003ef1d65597b85d2ab6fa19b59383b6'; // Replace with your OpenWeatherMap API key
+      const apiKey = '003ef1d65597b85d2ab6fa19b59383b6'; // Replace with your OpenWeatherMap API key
       final url =
           'https://api.openweathermap.org/data/2.5/weather?lat=${locData.latitude}&lon=${locData.longitude}&units=metric&appid=$apiKey';
 
@@ -162,8 +162,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Positioned(
-              top: 20,
-              right: 20,
+              top: 30,
+              right: 10,
               child: Row(
                 children: [
                   IconButton(
@@ -171,16 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const Caution()), // Navigate to Caution.dart
-                      );
-                    },
-                  ),
-                  IconButton(
-                    icon: Image.asset('images/Change.png'), // Use custom image as icon
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const RegistrationMenu()), // Navigate to Caution.dart
+                        MaterialPageRoute(builder: (context) => const RegistrationMenu()), // Navigate to RegistrationMenu.dart
                       );
                     },
                   ),
