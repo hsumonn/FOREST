@@ -5,10 +5,12 @@ import 'package:location/location.dart';
 import 'package:umbrella/registration_menu.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -205,7 +207,7 @@ class _DetailMenuState extends State<DetailMenu> {
                             controller: PageController(initialPage: 2, viewportFraction: 0.2),
                             itemBuilder: (context, index) {
                               DateTime now = DateTime.now();
-                              String hourLabel = DateTime(now.year, now.month, now.day, now.hour + index + 1).hour.toString()+ ':00';
+                              String hourLabel = '${DateTime(now.year, now.month, now.day, now.hour + index + 1).hour}:00';
                               return Column(
                                 children: [
                                   Text(
@@ -260,7 +262,7 @@ class _DetailMenuState extends State<DetailMenu> {
           return Center(child: Text('${snapshot.error}'));
         }
 
-        return Center(child: CircularProgressIndicator());
+        return const Center(child: CircularProgressIndicator());
       },
     );
   }
