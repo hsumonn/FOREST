@@ -1,4 +1,3 @@
-//sample cord
 import 'package:flutter/material.dart';
 
 
@@ -93,25 +92,25 @@ class _DropdownExampleState extends State<DropdownExample> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
 
-          //一番上に表示するタイトルテキスト
-          //Title text to be displayed at the top
-          const Text(
-            '登録画面',
-            style: TextStyle(
-              fontSize: 30, // サイズを変更
-              color: Colors.white
-              //backgroundColor: Colors.blueAccent,  //背景色
+            //一番上に表示するタイトルテキスト
+            //Title text to be displayed at the top
+            const Text(
+              '登録画面',
+              style: TextStyle(
+                  fontSize: 30, // サイズを変更
+                  color: Colors.white
+                //backgroundColor: Colors.blueAccent,  //背景色
+              ),
             ),
-          ),
 
-          //必要情報入力部分
-          //Required information input section
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
+            //必要情報入力部分
+            //Required information input section
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
 
-                TextFormField(
+                  TextFormField(
                     decoration: const InputDecoration(
                       hintText: "現在位置",   //テキスト内容
                       hintStyle: TextStyle(color: Colors.blueAccent),   //テキストカラー
@@ -122,9 +121,9 @@ class _DropdownExampleState extends State<DropdownExample> {
                     ),
                   ),
 
-                SizedBox(height: 16.0), // 2つのテキストフィールド間にスペースを追加
+                  SizedBox(height: 16.0), // 2つのテキストフィールド間にスペースを追加
 
-                TextFormField(
+                  TextFormField(
                     decoration: const InputDecoration(
                       hintText: "目的地",
                       hintStyle: TextStyle(color: Colors.blueAccent),
@@ -133,174 +132,174 @@ class _DropdownExampleState extends State<DropdownExample> {
                     ),
                   ),
 
-                SizedBox(height: 16.0), // スペース
+                  SizedBox(height: 16.0), // スペース
 
-                //曜日選択(ラジオボタン)
-                //Day of the week selection (radio button)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
+                  //曜日選択(ラジオボタン)
+                  //Day of the week selection (radio button)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
 
-                    Container(
-                      color: BC, // 背景色を設定
-                      //color: Colors.blueAccent, // 背景色を設定
-                      padding: const EdgeInsets.all(1.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Radio<int>(
-                            value: 1,
-                            groupValue: _selectedValue,
-                            onChanged: (int? value) {
-                              setState(() {
-                                _selectedValue = value!;
-                              });
-                            },
-                          ),
-                          const Text('日',style: TextStyle(color: Colors.blueAccent)),
-                        ],
+                      Container(
+                        color: BC, // 背景色を設定
+                        //color: Colors.blueAccent, // 背景色を設定
+                        padding: const EdgeInsets.all(1.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Radio<int>(
+                              value: 1,
+                              groupValue: _selectedValue,
+                              onChanged: (int? value) {
+                                setState(() {
+                                  _selectedValue = value!;
+                                });
+                              },
+                            ),
+                            const Text('日',style: TextStyle(color: Colors.blueAccent)),
+                          ],
+                        ),
                       ),
-                    ),
 
-                    Container(
-                      color: BC, // 背景色を設定
-                      padding: const EdgeInsets.all(1.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Radio<int>(
-                            value: 2,
-                            groupValue: _selectedValue,
-                            onChanged: (int? value) {
-                              setState(() {
-                                _selectedValue = value!;
-                              });
-                            },
-                          ),
-                          const Text('月',style: TextStyle(color: Colors.blueAccent)),
-                        ],
+                      Container(
+                        color: BC, // 背景色を設定
+                        padding: const EdgeInsets.all(1.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Radio<int>(
+                              value: 2,
+                              groupValue: _selectedValue,
+                              onChanged: (int? value) {
+                                setState(() {
+                                  _selectedValue = value!;
+                                });
+                              },
+                            ),
+                            const Text('月',style: TextStyle(color: Colors.blueAccent)),
+                          ],
+                        ),
                       ),
-                    ),
 
-                    Container(
-                      color: BC, // 背景色を設定
-                      padding: const EdgeInsets.all(1.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Radio<int>(
-                            value: 3,
-                            groupValue: _selectedValue,
-                            onChanged: (int? value) {
-                              setState(() {
-                                _selectedValue = value!;
-                              });
-                            },
-                          ),
-                          const Text('火',style: TextStyle(color: Colors.blueAccent)),
-                        ],
+                      Container(
+                        color: BC, // 背景色を設定
+                        padding: const EdgeInsets.all(1.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Radio<int>(
+                              value: 3,
+                              groupValue: _selectedValue,
+                              onChanged: (int? value) {
+                                setState(() {
+                                  _selectedValue = value!;
+                                });
+                              },
+                            ),
+                            const Text('火',style: TextStyle(color: Colors.blueAccent)),
+                          ],
+                        ),
                       ),
-                    ),
 
-                    Container(
-                      color: BC, // 背景色を設定
-                      padding: const EdgeInsets.all(1.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Radio<int>(
-                            value: 4,
-                            groupValue: _selectedValue,
-                            onChanged: (int? value) {
-                              setState(() {
-                                _selectedValue = value!;
-                              });
-                            },
-                          ),
-                          const Text('水',style: TextStyle(color: Colors.blueAccent)),
-                        ],
+                      Container(
+                        color: BC, // 背景色を設定
+                        padding: const EdgeInsets.all(1.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Radio<int>(
+                              value: 4,
+                              groupValue: _selectedValue,
+                              onChanged: (int? value) {
+                                setState(() {
+                                  _selectedValue = value!;
+                                });
+                              },
+                            ),
+                            const Text('水',style: TextStyle(color: Colors.blueAccent)),
+                          ],
+                        ),
                       ),
-                    ),
 
-                    Container(
-                      color: BC, // 背景色を設定
-                      padding: const EdgeInsets.all(1.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Radio<int>(
-                            value: 5,
-                            groupValue: _selectedValue,
-                            onChanged: (int? value) {
-                              setState(() {
-                                _selectedValue = value!;
-                              });
-                            },
-                          ),
-                          const Text('木',style: TextStyle(color: Colors.blueAccent)),
-                        ],
+                      Container(
+                        color: BC, // 背景色を設定
+                        padding: const EdgeInsets.all(1.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Radio<int>(
+                              value: 5,
+                              groupValue: _selectedValue,
+                              onChanged: (int? value) {
+                                setState(() {
+                                  _selectedValue = value!;
+                                });
+                              },
+                            ),
+                            const Text('木',style: TextStyle(color: Colors.blueAccent)),
+                          ],
+                        ),
                       ),
-                    ),
 
-                    Container(
-                      color: BC, // 背景色を設定
-                      padding: const EdgeInsets.all(1.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Radio<int>(
-                            value: 6,
-                            groupValue: _selectedValue,
-                            onChanged: (int? value) {
-                              setState(() {
-                                _selectedValue = value!;
-                              });
-                            },
-                          ),
-                          const Text('金',style: TextStyle(color: Colors.blueAccent)),
-                        ],
+                      Container(
+                        color: BC, // 背景色を設定
+                        padding: const EdgeInsets.all(1.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Radio<int>(
+                              value: 6,
+                              groupValue: _selectedValue,
+                              onChanged: (int? value) {
+                                setState(() {
+                                  _selectedValue = value!;
+                                });
+                              },
+                            ),
+                            const Text('金',style: TextStyle(color: Colors.blueAccent)),
+                          ],
+                        ),
                       ),
-                    ),
 
-                    Container(
-                      color: BC, // 背景色を設定
-                      padding: const EdgeInsets.all(1.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Radio<int>(
-                            value: 7,
-                            groupValue: _selectedValue,
-                            onChanged: (int? value) {
-                              setState(() {
-                                _selectedValue = value!;
-                              });
-                            },
-                          ),
-                          const Text('土',style: TextStyle(color: Colors.blueAccent)),
-                        ],
+                      Container(
+                        color: BC, // 背景色を設定
+                        padding: const EdgeInsets.all(1.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Radio<int>(
+                              value: 7,
+                              groupValue: _selectedValue,
+                              onChanged: (int? value) {
+                                setState(() {
+                                  _selectedValue = value!;
+                                });
+                              },
+                            ),
+                            const Text('土',style: TextStyle(color: Colors.blueAccent)),
+                          ],
+                        ),
                       ),
-                    ),
 
-                  ],
-                ),
-
-                SizedBox(height: 16.0), // スペース
-
-                //送信ボタン
-                ElevatedButton(
-                  //ボタンを押した時の処理
-                  onPressed: () {},
-                  child: Text('確認'),
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.blueAccent,
-                    backgroundColor: Colors.white,
+                    ],
                   ),
-                )
+
+                  SizedBox(height: 16.0), // スペース
+
+                  //送信ボタン
+                  ElevatedButton(
+                    //ボタンを押した時の処理
+                    onPressed: () {},
+                    child: Text('確認'),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.blueAccent,
+                      backgroundColor: Colors.white,
+                    ),
+                  )
 
                 ],
               ),
-          ),
+            ),
 
           ],
         ),
