@@ -78,7 +78,7 @@ class MyHomePage extends StatelessWidget {
                     ),
                   ),
 
-                  SizedBox(height: 16.0), // 2つのテキストフィールド間にスペースを追加
+                  const SizedBox(height: 16.0), // 2つのテキストフィールド間にスペースを追加
 
                   TextFormField(
                     decoration: const InputDecoration(
