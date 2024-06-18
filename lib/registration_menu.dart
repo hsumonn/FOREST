@@ -54,14 +54,12 @@ class _DropdownExampleState extends State<DropdownExample> {
   //_DropdownExampleState({super.key});
   //const MyHomePage({super.key});
 
-  // // 選択された値を保持する変数
-  // String _selectedValue = '選択してください';
-
-  // // ドロップダウンのアイテムリスト
-  // final List<String> _items = ['選択してください', '月', '火', '水', '木', '金', '土', '日'];
-
   // 選択されたラジオボタンの値を保持する変数
   int _selectedValue = 1;
+
+  //ラジオボタンの文字色を変更する
+  final Color BC = Colors.white;                   //背景色(background color)
+  //final TextStyle TC = TextStyle(color: Colors.blueAccent);  //文字色(text color)
 
 
   @override
@@ -102,7 +100,7 @@ class _DropdownExampleState extends State<DropdownExample> {
             style: TextStyle(
               fontSize: 30, // サイズを変更
               color: Colors.white
-              //backgroundColor: Colors.white,  //背景色
+              //backgroundColor: Colors.blueAccent,  //背景色
             ),
           ),
 
@@ -115,10 +113,12 @@ class _DropdownExampleState extends State<DropdownExample> {
 
                 TextFormField(
                     decoration: const InputDecoration(
-                      hintText: "現在位置",
+                      hintText: "現在位置",   //テキスト内容
+                      hintStyle: TextStyle(color: Colors.blueAccent),   //テキストカラー
                       // labelText: '現在位置', //上部にテキストを表示するならこっち
-                      fillColor: Colors.white,
+                      fillColor: Colors.white,  //背景色
                       filled: true,
+
                     ),
                   ),
 
@@ -127,41 +127,23 @@ class _DropdownExampleState extends State<DropdownExample> {
                 TextFormField(
                     decoration: const InputDecoration(
                       hintText: "目的地",
+                      hintStyle: TextStyle(color: Colors.blueAccent),
                       fillColor: Colors.white,
                       filled: true,
                     ),
                   ),
 
-                // //曜日のドロップダウンリスト
-                // //Drop-down list of days of the week
-                // DropdownButton<String>(
-                //   value: _selectedValue,
-                //   dropdownColor: Colors.blueAccent, // ドロップダウンリストの背景色を変更
-                //   iconEnabledColor: Colors.white, // ドロップダウンボタンのアイコンの色を変更
-                //   onChanged: (String? newValue) {
-                //     setState(() {
-                //       _selectedValue = newValue!;
-                //     });
-                //   },
-                //   items: _items.map<DropdownMenuItem<String>>((String value) {
-                //     return DropdownMenuItem<String>(
-                //       value: value,
-                //       child: Text(
-                //           value,
-                //           style: TextStyle(color: Colors.white), // ドロップダウンリストのテキスト色を変更
-                //       ),
-                //     );
-                //   }).toList(),
-                //   style: TextStyle(color: Colors.white), // ドロップダウンボタンのテキスト色を変更
-                // ),
+                SizedBox(height: 16.0), // スペース
 
-
+                //曜日選択(ラジオボタン)
+                //Day of the week selection (radio button)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
 
                     Container(
-                      color: Colors.blueAccent, // 背景色を設定
+                      color: BC, // 背景色を設定
+                      //color: Colors.blueAccent, // 背景色を設定
                       padding: const EdgeInsets.all(1.0),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -175,13 +157,13 @@ class _DropdownExampleState extends State<DropdownExample> {
                               });
                             },
                           ),
-                          const Text('日',style: TextStyle(color: Colors.white)),
+                          const Text('日',style: TextStyle(color: Colors.blueAccent)),
                         ],
                       ),
                     ),
 
                     Container(
-                      color: Colors.blueAccent, // 背景色を設定
+                      color: BC, // 背景色を設定
                       padding: const EdgeInsets.all(1.0),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -195,13 +177,13 @@ class _DropdownExampleState extends State<DropdownExample> {
                               });
                             },
                           ),
-                          const Text('月',style: TextStyle(color: Colors.white)),
+                          const Text('月',style: TextStyle(color: Colors.blueAccent)),
                         ],
                       ),
                     ),
 
                     Container(
-                      color: Colors.blueAccent, // 背景色を設定
+                      color: BC, // 背景色を設定
                       padding: const EdgeInsets.all(1.0),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -215,13 +197,13 @@ class _DropdownExampleState extends State<DropdownExample> {
                               });
                             },
                           ),
-                          const Text('火',style: TextStyle(color: Colors.white)),
+                          const Text('火',style: TextStyle(color: Colors.blueAccent)),
                         ],
                       ),
                     ),
 
                     Container(
-                      color: Colors.blueAccent, // 背景色を設定
+                      color: BC, // 背景色を設定
                       padding: const EdgeInsets.all(1.0),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -235,13 +217,13 @@ class _DropdownExampleState extends State<DropdownExample> {
                               });
                             },
                           ),
-                          const Text('水',style: TextStyle(color: Colors.white)),
+                          const Text('水',style: TextStyle(color: Colors.blueAccent)),
                         ],
                       ),
                     ),
 
                     Container(
-                      color: Colors.blueAccent, // 背景色を設定
+                      color: BC, // 背景色を設定
                       padding: const EdgeInsets.all(1.0),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -255,13 +237,13 @@ class _DropdownExampleState extends State<DropdownExample> {
                               });
                             },
                           ),
-                          const Text('木',style: TextStyle(color: Colors.white)),
+                          const Text('木',style: TextStyle(color: Colors.blueAccent)),
                         ],
                       ),
                     ),
 
                     Container(
-                      color: Colors.blueAccent, // 背景色を設定
+                      color: BC, // 背景色を設定
                       padding: const EdgeInsets.all(1.0),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -275,13 +257,13 @@ class _DropdownExampleState extends State<DropdownExample> {
                               });
                             },
                           ),
-                          const Text('金',style: TextStyle(color: Colors.white)),
+                          const Text('金',style: TextStyle(color: Colors.blueAccent)),
                         ],
                       ),
                     ),
 
                     Container(
-                      color: Colors.blueAccent, // 背景色を設定
+                      color: BC, // 背景色を設定
                       padding: const EdgeInsets.all(1.0),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -295,7 +277,7 @@ class _DropdownExampleState extends State<DropdownExample> {
                               });
                             },
                           ),
-                          const Text('土',style: TextStyle(color: Colors.white)),
+                          const Text('土',style: TextStyle(color: Colors.blueAccent)),
                         ],
                       ),
                     ),
@@ -303,6 +285,18 @@ class _DropdownExampleState extends State<DropdownExample> {
                   ],
                 ),
 
+                SizedBox(height: 16.0), // スペース
+
+                //送信ボタン
+                ElevatedButton(
+                  //ボタンを押した時の処理
+                  onPressed: () {},
+                  child: Text('確認'),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.blueAccent,
+                    backgroundColor: Colors.white,
+                  ),
+                )
 
                 ],
               ),
