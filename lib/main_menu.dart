@@ -3,13 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
 import 'package:logger/logger.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'detail_menu.dart'; // Import DetailMenu.dart or provide the correct path
 import 'registration_menu.dart'; // Import registration_menu.dart or provide the correct path
 
 void main() {
   runApp(const MyApp());
 }
+
+konosubarasii sekaini syukuhuku wo
+
+pancake tabetai harajukudeiyahoi
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
