@@ -1,6 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:location/location.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -112,8 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<Map<String, dynamic>?> _fetchWeatherDataByCoordinates(double latitude, double longitude) async {
     const apiKey = '003ef1d65597b85d2ab6fa19b59383b6'; // Replace with your OpenWeatherMap API key
-    final url =
-        'https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&units=metric&appid=$apiKey';
+    final url = 'https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&units=metric&appid=$apiKey';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -205,7 +204,6 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-
   String _getIconUrl(String weatherDescription, bool isDayTime) {
     if (weatherDescription.contains('rain')) {
       return 'images/heavy_rain.png'; // Use the same icon for all rain types
@@ -226,11 +224,7 @@ class _MyHomePageState extends State<MyHomePage> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => DetailMenu(onWeatherChange: (String description, bool dayTime) {
-                setState(() {
-                  // This callback function is just an example and doesn't do anything specific.
-                });
-              })),
+              MaterialPageRoute(builder: (context) => const DetailMenu()), // Navigate to DetailMenu
             );
           },
           child: Image.asset(
