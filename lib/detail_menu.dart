@@ -7,22 +7,53 @@ import 'package:umbrella/registration_menu.dart';
 void main() {
   runApp(MyApp());
 }
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
 
-class MyApp extends StatelessWidget {
+class _MyAppState extends State<MyApp> {
+  String weatherDescription = '';
+  bool isDayTime = true;
+  List<double> rainfallData = [];
+  double rainProbability = 0.0;
+  void updateWeather(String newDescription, bool dayTime, List<double> newRainfallData, double newRainProbability) {
+    setState(() {
+      weatherDescription = newDescription;
+      isDayTime = dayTime;
+      rainfallData = newRainfallData;
+      rainProbability = newRainProbability;
+    });
+  }
+  List<Color> getGradientColors() {
+    if (weatherDescription.contains('rain')) {
+      return isDayTime ? [Colors.blueGrey, Colors.white24] : [Colors.black45, Colors.white24];
+    } else if (weatherDescription.contains('clear')) {
+      return isDayTime ? [Colors.lightBlueAccent, Colors.white] : [Colors.black45, Colors.white24];
+    } else if (weatherDescription.contains('haze') || weatherDescription.contains('cloudy')) {
+      return isDayTime ? [Colors.lightBlueAccent, Colors.white] : [Colors.black45, Colors.white24];
+    } else if (weatherDescription.contains('thunderstorm')) {
+      return [Colors.black45, Colors.white24];
+    } else {
+      return isDayTime ? [Colors.purpleAccent, Colors.blueGrey] : [Colors.black45, Colors.white24];
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            //colors: <Color>[Colors.grey, Colors.lightBlueAccent],
-           colors: <Color>[Colors.lightBlueAccent, Colors.white],
+            colors: getGradientColors(),
           ),
+
         ),
-        child: const DetailMenu(),
+        child: DetailMenu(onWeatherChange: updateWeather),
       ),
     );
   }
@@ -33,27 +64,43 @@ class WeatherData {
   final String icon;
   final double temperature;
   final String cityName;
+  final List<double> rainfallData;
+  final double rainProbability;
 
   WeatherData({
     required this.description,
     required this.icon,
     required this.temperature,
     required this.cityName,
+    required this.rainfallData,
+    required this.rainProbability,
   });
 
   factory WeatherData.fromJson(Map<String, dynamic> json) {
+    List<double> rainfallData = [];
+
+    if (json.containsKey('rain') && json['rain'].containsKey('1h')) {
+      double rain1h = json['rain']['1h'].toDouble();
+      rainfallData.add(rain1h);
+    }
+
+    double rainProbability = 0.0;
+    if (json.containsKey('pop')) {
+      rainProbability = json['pop'].toDouble() * 100;
+    }
     return WeatherData(
       description: json['weather'][0]['description'],
       icon: json['weather'][0]['icon'],
       temperature: json['main']['temp'],
       cityName: json['name'],
+      rainfallData: rainfallData,
+      rainProbability: rainProbability,
     );
   }
 }
-
 class DetailMenu extends StatefulWidget {
-  const DetailMenu({super.key});
-
+  final Function(String weatherDescription, bool isDayTime, List<double> rainfallData, double rainProbability) onWeatherChange;
+  const DetailMenu({required this.onWeatherChange, super.key});
   @override
   _DetailMenuState createState() => _DetailMenuState();
 }
@@ -77,35 +124,42 @@ class _DetailMenuState extends State<DetailMenu> {
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      return WeatherData.fromJson(json.decode(response.body));
+      WeatherData weatherData = WeatherData.fromJson(json.decode(response.body));
+
+      bool isDayTime = DateTime.now().hour > 6 && DateTime.now().hour < 18;
+      widget.onWeatherChange(weatherData.description, isDayTime, weatherData.rainfallData, weatherData.rainProbability);
+
+      return weatherData;
     } else {
       throw Exception('Failed to load weather data');
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    final List<String> imageNames = [
-      'light_rain_noon.png',
-      'heavy_rain.png',
-      'light_rain_night.png',
-      'sunny.png',
-      'light_rain_noon.png',
-      'thunder.png',
-      'heavy_rain.png',
-      'clearnight.png',
-      'cloudy.png',
-      'sunny.png',
-      'sunny.png',
-      'sunny.png'
-    ];
+  String getIconUrl(String description, bool isDayTime, int hour) {
+    if (description.contains('rain')) {
+      if (description.contains('light')) {
+        return isDayTime ? 'images/light_rain_noon.png' : 'images/light_rain_night.png';
+      } else {
+        return 'images/heavy_rain.png';
+      }
+    } else if (description.contains('clear')) {
+      return isDayTime ? 'images/sunny.png' : 'images/clearnight.png';
+    } else if (description.contains('haze')) {
+      return isDayTime ? 'images/cloudy.png' : 'images/clearnight.png';
+    } else if (description.contains('thunderstorm')) {
+      return 'images/thunder.png';
+    } else {
+      return 'images/sunny.png';
+    }
+  }
 
+  Widget build(BuildContext context) {
     final Map<String, String> cityToKanji = {
       'Osaka': '大阪',
       'Tokyo': '東京',
       'Kyoto': '京都',
       'Mountain View': '中崎町',
-      // Add more city mappings as needed
     };
 
     return FutureBuilder<WeatherData>(
@@ -119,17 +173,6 @@ class _DetailMenuState extends State<DetailMenu> {
 
           String weatherDescription = snapshot.data!.description.toLowerCase();
           bool isDayTime = DateTime.now().hour > 6 && DateTime.now().hour < 18;
-          String iconUrl;
-
-          if (weatherDescription.contains('rain')) {
-            if (weatherDescription.contains('light')) {
-              iconUrl = isDayTime ? 'images/light_rain_noon.png' : 'images/light_rain_night.png';
-            } else {
-              iconUrl = 'images/heavy_rain.png';
-            }
-          } else {
-            iconUrl = isDayTime ? 'images/sunny.png' : 'images/clearnight.png';
-          }
 
           return SizedBox(
             width: 340,
@@ -153,7 +196,7 @@ class _DetailMenuState extends State<DetailMenu> {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const RegistrationMenu()), // Navigate to RegistrationMenu.dart
+                              MaterialPageRoute(builder: (context) => const RegistrationMenu()),
                             );
                           },
                         ),
@@ -172,11 +215,12 @@ class _DetailMenuState extends State<DetailMenu> {
                         style: const TextStyle(
                           fontSize: 24,
                           color: Colors.white,
+                          decoration: TextDecoration.none,
                         ),
                       ),
                       const SizedBox(height: 10),
                       Image.asset(
-                        iconUrl,
+                        getIconUrl(weatherDescription, isDayTime, DateTime.now().hour),
                         width: 100,
                         height: 100,
                         fit: BoxFit.cover,
@@ -189,47 +233,65 @@ class _DetailMenuState extends State<DetailMenu> {
                           color: Colors.white,
                         ),
                       ),
+                      const SizedBox(height: 5),
+                      Text(
+                        'Rain Probability: ${snapshot.data!.rainProbability.toInt()}%',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
+                      ),
                       const SizedBox(height: 70),
                       CustomPaint(
-                        size: const Size(double.infinity, 3),
+                        size: const Size(double.infinity, 2),
                         painter: StraightLinePainter(),
                       ),
                       const SizedBox(height: 10),
                       Align(
                         alignment: Alignment.centerLeft,
                         child: SizedBox(
-                          height: 120,
+                          height: 150,
                           child: PageView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: imageNames.length,
+                            itemCount: 12,
                             controller: PageController(initialPage: 2, viewportFraction: 0.2),
                             itemBuilder: (context, index) {
                               DateTime now = DateTime.now();
-                              String hourLabel = DateTime(now.year, now.month, now.day, now.hour + index + 1).hour.toString()+ ':00';
+                              int displayHour = (now.hour + index) % 24; // Ensure hour is within 0-23 range
+                              bool futureIsDayTime = displayHour > 6 && displayHour < 18;
+                              String hourLabel = '${displayHour.toString().padLeft(2, '0')}:00';
                               return Column(
                                 children: [
                                   Text(
                                     hourLabel,
                                     style: const TextStyle(
-                                      fontSize: 15,
+                                      fontSize: 16,
                                       color: Colors.white,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
                                   Image.asset(
-                                    'images/${imageNames[index]}',
+                                    getIconUrl(weatherDescription, futureIsDayTime, displayHour),
                                     width: 75,
                                     height: 75,
                                     fit: BoxFit.cover,
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    '${(snapshot.data!.temperature - index).toInt()} °C',
+                                    '${(snapshot.data!.temperature - index).toInt()}°C',
                                     style: const TextStyle(
                                       fontSize: 15,
                                       color: Colors.white,
                                     ),
                                   ),
+                                  if (snapshot.data!.rainProbability > 0)
+                                    Text(
+                                      '${snapshot.data!.rainProbability.toInt()}%',
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                                 ],
                               );
                             },
@@ -238,7 +300,7 @@ class _DetailMenuState extends State<DetailMenu> {
                       ),
                       const SizedBox(height: 1),
                       CustomPaint(
-                        size: const Size(double.infinity, 3),
+                        size: const Size(double.infinity, 2),
                         painter: StraightLinePainter(),
                       ),
                       const SizedBox(height: 20),
@@ -259,7 +321,6 @@ class _DetailMenuState extends State<DetailMenu> {
         } else if (snapshot.hasError) {
           return Center(child: Text('${snapshot.error}'));
         }
-
         return Center(child: CircularProgressIndicator());
       },
     );
@@ -308,4 +369,3 @@ class GraphPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-
