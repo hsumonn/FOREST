@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
 import 'package:logger/logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'detail_menu.dart'; // Import DetailMenu.dart or provide the correct path
 import 'registration_menu.dart'; // Import registration_menu.dart or provide the correct path
 
@@ -44,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
     'Sapporo': '札幌',
     'Fukuoka': '福岡',
     'Hiroshima': '広島',
-    'Mountain View': '中崎',
+    'Mountain View': '中崎町',
     // Add more cities as needed
   };
 
@@ -54,7 +55,36 @@ class _MyHomePageState extends State<MyHomePage> {
     _fetchWeather();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _fetchWeather();
+  }
+
   Future<void> _fetchWeather() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final locations = prefs.getStringList('locations') ?? [];
+    final trimmedLocations = locations.map((location) => location.trim()).toList();
+
+    _weatherData.clear(); // Clear existing data before fetching new data
+
+    if (trimmedLocations.isEmpty || trimmedLocations.every((location) => location.isEmpty)) {
+      await _fetchCurrentDeviceLocationWeather();
+    } else {
+      // Limit the number of locations to 2
+      if (trimmedLocations.length > 1) {
+        trimmedLocations.removeAt(0); // Remove the oldest location
+      }
+
+      for (final location in trimmedLocations) {
+        if (location.isNotEmpty) {
+          await _getWeatherForLocation(location);
+        }
+      }
+    }
+  }
+
+  Future<void> _fetchCurrentDeviceLocationWeather() async {
     final location = Location();
     LocationData? locData;
     PermissionStatus? hasPermission;
@@ -73,43 +103,114 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     if (locData != null) {
-      const apiKey = '003ef1d65597b85d2ab6fa19b59383b6'; // Replace with your OpenWeatherMap API key
-      final url =
-          'https://api.openweathermap.org/data/2.5/weather?lat=${locData.latitude}&lon=${locData.longitude}&units=metric&appid=$apiKey';
+      final data = await _fetchWeatherDataByCoordinates(locData.latitude!, locData.longitude!);
+      if (data != null) {
+        _addWeatherData(data);
+      }
+    }
+  }
 
+  Future<Map<String, dynamic>?> _fetchWeatherDataByCoordinates(double latitude, double longitude) async {
+    const apiKey = '003ef1d65597b85d2ab6fa19b59383b6'; // Replace with your OpenWeatherMap API key
+    final url =
+        'https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&units=metric&appid=$apiKey';
+
+    try {
       final response = await http.get(Uri.parse(url));
-      final data = json.decode(response.body);
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        _logger.e('Error fetching weather data: ${response.statusCode}');
+      }
+    } catch (e) {
+      _logger.e('Error fetching weather data:', e);
+    }
 
-      setState(() {
-        final now = DateTime.now();
-        final sunrise = DateTime.fromMillisecondsSinceEpoch(data['sys']['sunrise'] * 1000);
-        final sunset = DateTime.fromMillisecondsSinceEpoch(data['sys']['sunset'] * 1000);
-        final isDayTime = now.isAfter(sunrise) && now.isBefore(sunset);
-        final weatherDescription = data['weather'][0]['description'].toLowerCase();
-        String cityName = data['name'];
+    return null;
+  }
 
-        // Convert city name to Kanji if it exists in the map
-        if (cityToKanji.containsKey(cityName)) {
-          cityName = cityToKanji[cityName]!;
+  Future<void> _getWeatherForLocation(String location) async {
+    final locationData = await _getLocationCoordinates(location);
+
+    if (locationData != null) {
+      final data = await _fetchWeatherDataByCoordinates(locationData.latitude!, locationData.longitude!);
+      if (data != null) {
+        _addWeatherData(data);
+      }
+    }
+  }
+
+  Future<LocationData?> _getLocationCoordinates(String location) async {
+    // Example using OpenCage Geocoding API (replace with your API key)
+    const apiKey = '90c42a6ae6844f05a1d5f665f1b58b6d';
+    final url = 'https://api.opencagedata.com/geocode/v1/json?q=${Uri.encodeComponent(location)}&key=$apiKey';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final coordinates = data['results'][0]['geometry'];
+        return LocationData.fromMap({
+          'latitude': coordinates['lat'],
+          'longitude': coordinates['lng'],
+        });
+      } else {
+        _logger.e('Error fetching coordinates: ${response.statusCode}');
+      }
+    } catch (e) {
+      _logger.e('Error fetching coordinates:', e);
+    }
+    return null;
+  }
+
+  void _addWeatherData(Map<String, dynamic> data) {
+    setState(() {
+      final now = DateTime.now();
+      final sunrise = DateTime.fromMillisecondsSinceEpoch(data['sys']['sunrise'] * 1000);
+      final sunset = DateTime.fromMillisecondsSinceEpoch(data['sys']['sunset'] * 1000);
+      final isDayTime = now.isAfter(sunrise) && now.isBefore(sunset);
+      final weatherDescription = data['weather'][0]['description'].toLowerCase();
+      String cityName = data['name'];
+
+      // Convert city name to Kanji if it exists in the map
+      if (cityToKanji.containsKey(cityName)) {
+        cityName = cityToKanji[cityName]!;
+      }
+
+      String iconUrl = _getIconUrl(weatherDescription, isDayTime);
+
+      // Check if the city already exists in _weatherData
+      bool cityExists = false;
+      int existingIndex = -1;
+      for (int i = 0; i < _weatherData.length; i++) {
+        if (_weatherData[i]['city'] == cityName) {
+          cityExists = true;
+          existingIndex = i;
+          break;
         }
+      }
 
-        String iconUrl;
-        if (weatherDescription.contains('rain')) {
-          if (weatherDescription.contains('light')) {
-            iconUrl = isDayTime ? 'images/light_rain_noon.png' : 'images/light_rain_night.png';
-          } else {
-            iconUrl = 'images/heavy_rain.png';
-          }
-        } else {
-          iconUrl = isDayTime ? 'images/sunny.png' : 'images/clearnight.png';
-        }
-
+      if (cityExists) {
+        // Update the existing entry
+        _weatherData[existingIndex]['iconUrl'] = iconUrl;
+        _weatherData[existingIndex]['rainTime'] = weatherDescription.contains('rain') ? '雨' : '晴れ';
+      } else {
+        // Add a new entry
         _weatherData.add({
           'city': cityName,
           'iconUrl': iconUrl,
           'rainTime': weatherDescription.contains('rain') ? '雨' : '晴れ',
         });
-      });
+      }
+    });
+  }
+
+
+  String _getIconUrl(String weatherDescription, bool isDayTime) {
+    if (weatherDescription.contains('rain')) {
+      return 'images/heavy_rain.png'; // Use the same icon for all rain types
+    } else {
+      return isDayTime ? 'images/sunny.png' : 'images/clearnight.png';
     }
   }
 
@@ -125,7 +226,11 @@ class _MyHomePageState extends State<MyHomePage> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const DetailMenu()),
+              MaterialPageRoute(builder: (context) => DetailMenu(onWeatherChange: (String description, bool dayTime) {
+                setState(() {
+                  // This callback function is just an example and doesn't do anything specific.
+                });
+              })),
             );
           },
           child: Image.asset(
@@ -151,6 +256,19 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         child: Stack(
           children: [
+            Positioned(
+              top: 30,
+              right: 10,
+              child: IconButton(
+                icon: Image.asset('images/registration.png'), // Use custom image as icon
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const RegistrationMenu()),
+                  ).then((_) => _fetchWeather()); // Refresh weather data after returning from RegistrationMenu
+                },
+              ),
+            ),
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -158,23 +276,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: _weatherData.map((weather) => _buildWeatherInfo(weather)).toList(),
                 ),
-              ),
-            ),
-            Positioned(
-              top: 30,
-              right: 10,
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: Image.asset('images/registration.png'), // Use custom image as icon
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const RegistrationMenu()), // Navigate to RegistrationMenu.dart
-                      );
-                    },
-                  ),
-                ],
               ),
             ),
           ],

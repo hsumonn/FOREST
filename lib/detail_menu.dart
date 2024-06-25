@@ -5,10 +5,12 @@ import 'package:location/location.dart';
 import 'package:umbrella/registration_menu.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -40,17 +42,24 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: getGradientColors(),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        useMaterial3: true,
+      ),
+      home: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: getGradientColors(),
+            ),
           ),
+          child: DetailMenu(onWeatherChange: updateWeather),
         ),
-        child: DetailMenu(onWeatherChange: updateWeather),
       ),
     );
   }
@@ -98,7 +107,7 @@ class _DetailMenuState extends State<DetailMenu> {
   }
 
   Future<WeatherData> fetchWeatherData() async {
-    const apiKey = 'eed754aeda9ee52d698e40be18de7b9c';
+    const apiKey = '003ef1d65597b85d2ab6fa19b59383b6'; // Replace with your OpenWeatherMap API key
 
     Location location = Location();
     LocationData locData = await location.getLocation();
@@ -290,7 +299,7 @@ class _DetailMenuState extends State<DetailMenu> {
           return Center(child: Text('${snapshot.error}'));
         }
 
-        return Center(child: CircularProgressIndicator());
+        return const Center(child: CircularProgressIndicator());
       },
     );
   }
