@@ -1,310 +1,253 @@
 import 'package:flutter/material.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  runApp(const RegistrationMenu());
-  runApp(MyApp());
-}
-
-class RegistrationMenu extends StatelessWidget {
-  const RegistrationMenu({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Registration menu',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(),
-      //home: const MyHomePage(),
-    );
-  }
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,  //右上のデバッグ帯を削除する
-      title: 'touroku gamen', // アプリ全体のタイトル
-      theme: ThemeData(), // アプリ全体のテーマ
-      home: MyHomePage(), // 最初に表示するウィジェット
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: DropdownExample(),
+      debugShowCheckedModeBanner: false,
+      title: 'Main Menu',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
+      home: const MainMenu(),
     );
   }
 }
 
-class DropdownExample extends StatefulWidget {
+class MainMenu extends StatefulWidget {
+  const MainMenu({super.key});
+
   @override
-  _DropdownExampleState createState() => _DropdownExampleState();
+  _MainMenuState createState() => _MainMenuState();
 }
 
-class _DropdownExampleState extends State<DropdownExample> {
-  //_DropdownExampleState({super.key});
-  //const MyHomePage({super.key});
+class _MainMenuState extends State<MainMenu> {
+  String _currentLocation = '';
+  String _destination = '';
+  List<int> _selectedDays = [];
+  final List<String> _days = ['日', '月', '火', '水', '木', '金', '土'];
 
-  // 選択されたラジオボタンの値を保持する変数
-  int _selectedValue = 1;
+  @override
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
 
-  //ラジオボタンの文字色を変更する
-  final Color BC = Colors.white;                   //背景色(background color)
-  //final TextStyle TC = TextStyle(color: Colors.blueAccent);  //文字色(text color)
-
+  Future<void> _loadPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _currentLocation = prefs.getString('currentLocation') ?? '';
+      _destination = prefs.getString('destination') ?? '';
+      _selectedDays = prefs.getStringList('selectedDays')?.map((e) => int.parse(e)).toList() ?? [];
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      //ヘッダー
       appBar: AppBar(
-        //ここにタイトル
-          title: Image.asset(
-            './images/logo_test.png', //ロゴ（仮置き）
-            width: 100,  // 幅を指定
-            height: 50,  // 高さを指定
-            //fit: BoxFit.contain,  // 画像のフィット方法を指定
-          )
+        title: const Text('Main Menu'),
       ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text('現在位置: $_currentLocation'),
+            Text('目的地: $_destination'),
+            Text('選択した曜日: ${_selectedDays.map((day) => _days[day - 1]).join(', ')}'),
+            const SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RegistrationMenu()),
+                ).then((_) => _loadPreferences());
+              },
+              child: const Text('情報を登録'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-      //ボディ
+class RegistrationMenu extends StatefulWidget {
+  const RegistrationMenu({super.key});
+
+  @override
+  _RegistrationMenuState createState() => _RegistrationMenuState();
+}
+
+class _RegistrationMenuState extends State<RegistrationMenu> {
+  final TextEditingController _currentLocationController = TextEditingController();
+  final TextEditingController _destinationController = TextEditingController();
+  List<int> _selectedDays = [];
+  final Color BC = Colors.white;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
+  Future<void> _loadPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _currentLocationController.text = prefs.getString('currentLocation') ?? '';
+      _destinationController.text = prefs.getString('destination') ?? '';
+      _selectedDays = prefs.getStringList('selectedDays')?.map((e) => int.parse(e)).toList() ?? [];
+    });
+  }
+
+  Future<void> _savePreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('currentLocation', _currentLocationController.text);
+    await prefs.setString('destination', _destinationController.text);
+    await prefs.setStringList('selectedDays', _selectedDays.map((day) => day.toString()).toList());
+  }
+
+  Future<void> _clearPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('currentLocation');
+    await prefs.remove('destination');
+    await prefs.remove('selectedDays');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Image.asset(
+          './images/logo_test.png',
+          width: 100,
+          height: 50,
+        ),
+      ),
       body: Container(
-
-        //背景画像を設定
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('./images/weather_test.jpg'), //ここが画像
+            image: AssetImage('./images/weather_test.jpg'),
             fit: BoxFit.cover,
           ),
         ),
-
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-
-            //一番上に表示するタイトルテキスト
-            //Title text to be displayed at the top
             const Text(
               '登録画面',
               style: TextStyle(
-                  fontSize: 30, // サイズを変更
-                  color: Colors.white
-                //backgroundColor: Colors.blueAccent,  //背景色
+                fontSize: 30,
+                color: Colors.white,
               ),
             ),
-
-            //必要情報入力部分
-            //Required information input section
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-
                   TextFormField(
+                    controller: _currentLocationController,
                     decoration: const InputDecoration(
-                      hintText: "現在位置",   //テキスト内容
-                      hintStyle: TextStyle(color: Colors.blueAccent),   //テキストカラー
-                      // labelText: '現在位置', //上部にテキストを表示するならこっち
-                      fillColor: Colors.white,  //背景色
-                      filled: true,
-
-                    ),
-                  ),
-
-                  SizedBox(height: 16.0), // 2つのテキストフィールド間にスペースを追加
-
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      hintText: "目的地",
-                      hintStyle: TextStyle(color: Colors.blueAccent),
+                      hintText: "現在位置",
+                      hintStyle: TextStyle(color: Colors.black),
                       fillColor: Colors.white,
                       filled: true,
                     ),
                   ),
-
-                  SizedBox(height: 16.0), // スペース
-
-                  //曜日選択(ラジオボタン)
-                  //Day of the week selection (radio button)
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: _destinationController,
+                    decoration: const InputDecoration(
+                      hintText: "目的地",
+                      hintStyle: TextStyle(color: Colors.black),
+                      fillColor: Colors.white,
+                      filled: true,
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
-
-                      Container(
-                        color: BC, // 背景色を設定
-                        //color: Colors.blueAccent, // 背景色を設定
-                        padding: const EdgeInsets.all(1.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Radio<int>(
-                              value: 1,
-                              groupValue: _selectedValue,
-                              onChanged: (int? value) {
-                                setState(() {
-                                  _selectedValue = value!;
-                                });
-                              },
-                            ),
-                            const Text('日',style: TextStyle(color: Colors.blueAccent)),
-                          ],
-                        ),
-                      ),
-
-                      Container(
-                        color: BC, // 背景色を設定
-                        padding: const EdgeInsets.all(1.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Radio<int>(
-                              value: 2,
-                              groupValue: _selectedValue,
-                              onChanged: (int? value) {
-                                setState(() {
-                                  _selectedValue = value!;
-                                });
-                              },
-                            ),
-                            const Text('月',style: TextStyle(color: Colors.blueAccent)),
-                          ],
-                        ),
-                      ),
-
-                      Container(
-                        color: BC, // 背景色を設定
-                        padding: const EdgeInsets.all(1.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Radio<int>(
-                              value: 3,
-                              groupValue: _selectedValue,
-                              onChanged: (int? value) {
-                                setState(() {
-                                  _selectedValue = value!;
-                                });
-                              },
-                            ),
-                            const Text('火',style: TextStyle(color: Colors.blueAccent)),
-                          ],
-                        ),
-                      ),
-
-                      Container(
-                        color: BC, // 背景色を設定
-                        padding: const EdgeInsets.all(1.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Radio<int>(
-                              value: 4,
-                              groupValue: _selectedValue,
-                              onChanged: (int? value) {
-                                setState(() {
-                                  _selectedValue = value!;
-                                });
-                              },
-                            ),
-                            const Text('水',style: TextStyle(color: Colors.blueAccent)),
-                          ],
-                        ),
-                      ),
-
-                      Container(
-                        color: BC, // 背景色を設定
-                        padding: const EdgeInsets.all(1.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Radio<int>(
-                              value: 5,
-                              groupValue: _selectedValue,
-                              onChanged: (int? value) {
-                                setState(() {
-                                  _selectedValue = value!;
-                                });
-                              },
-                            ),
-                            const Text('木',style: TextStyle(color: Colors.blueAccent)),
-                          ],
-                        ),
-                      ),
-
-                      Container(
-                        color: BC, // 背景色を設定
-                        padding: const EdgeInsets.all(1.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Radio<int>(
-                              value: 6,
-                              groupValue: _selectedValue,
-                              onChanged: (int? value) {
-                                setState(() {
-                                  _selectedValue = value!;
-                                });
-                              },
-                            ),
-                            const Text('金',style: TextStyle(color: Colors.blueAccent)),
-                          ],
-                        ),
-                      ),
-
-                      Container(
-                        color: BC, // 背景色を設定
-                        padding: const EdgeInsets.all(1.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Radio<int>(
-                              value: 7,
-                              groupValue: _selectedValue,
-                              onChanged: (int? value) {
-                                setState(() {
-                                  _selectedValue = value!;
-                                });
-                              },
-                            ),
-                            const Text('土',style: TextStyle(color: Colors.blueAccent)),
-                          ],
-                        ),
-                      ),
-
+                      _buildCheckbox(1, '日'),
+                      _buildCheckbox(2, '月'),
+                      _buildCheckbox(3, '火'),
+                      _buildCheckbox(4, '水'),
+                      _buildCheckbox(5, '木'),
+                      _buildCheckbox(6, '金'),
+                      _buildCheckbox(7, '土'),
                     ],
                   ),
-
-                  SizedBox(height: 16.0), // スペース
-
-                  //送信ボタン
+                  const SizedBox(height: 16.0),
                   ElevatedButton(
-                    //ボタンを押した時の処理
-                    onPressed: () {},
-                    child: Text('確認'),
+                    onPressed: () async {
+                      await _clearPreferences();  // Clear previous data
+                      await _savePreferences();   // Save new data
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('情報が保存されました。')),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.blueAccent,
+                      foregroundColor: Colors.black,
                       backgroundColor: Colors.white,
                     ),
-                  )
-
+                    child: const Text('確認'),
+                  ),
                 ],
               ),
             ),
-
           ],
         ),
       ),
+    );
+  }
 
+  Widget _buildCheckbox(int value, String label) {
+    return Container(
+      color: BC,
+      padding: const EdgeInsets.all(1.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          InkWell(
+            onTap: () {
+              setState(() {
+                if (_selectedDays.contains(value)) {
+                  _selectedDays.remove(value);
+                } else {
+                  _selectedDays.add(value);
+                }
+              });
+            },
+            child: Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.blueAccent),
+                color: _selectedDays.contains(value) ? Colors.blueAccent : Colors.transparent,
+              ),
+              child: Center(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: _selectedDays.contains(value) ? Colors.white : Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
