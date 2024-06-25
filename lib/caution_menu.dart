@@ -8,6 +8,7 @@ void main() {
 class Caution extends StatelessWidget {
   const Caution({super.key});
 
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,9 +24,10 @@ class Caution extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
 
   final String title;
+
+  const MyHomePage({super.key, required this.title});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
