@@ -58,19 +58,22 @@ class _MyHomePageState extends State<MyHomePage> {
                 color: Colors.black38,
                 borderRadius: BorderRadius.circular(30.0),
               ),
-              child: Marquee(
-                text: '本日、大阪府、○○県で、雨の予定あり。 傘をお忘れないように！   ', // 流れるテキスト
-                style: const TextStyle(color: Colors.white, fontSize: 33,decoration: TextDecoration.none,), // テキストのスタイル
-                scrollAxis: Axis.horizontal, // テキストの流れる方向
-                crossAxisAlignment: CrossAxisAlignment.center, // テキストの縦方向の配置
-                blankSpace: 20.0, // テキストがループするときの余白
-                velocity: 100.0, // テキストの速度
-                pauseAfterRound: const Duration(seconds: 1), // ループ後の一時停止時間
-                startPadding: 10.0, // テキストの開始位置の余白
-                accelerationDuration: const Duration(seconds: 1), // 加速時間
-                accelerationCurve: Curves.linear, // 加速カーブ
-                decelerationDuration: const Duration(milliseconds: 500), // 減速時間
-                decelerationCurve: Curves.easeOut, // 減速カーブ
+              child: Padding(
+                padding: const EdgeInsets.only(top: 25.0),
+                child: Marquee(
+                  text: '⚠ 本日、大阪府、○○県で、雨の予定あり。 傘をお忘れないように！   ', // 流れるテキスト
+                  style: const TextStyle(color: Colors.white, fontSize: 39,decoration: TextDecoration.none,), // テキストのスタイル
+                  scrollAxis: Axis.horizontal, // テキストの流れる方向
+                  crossAxisAlignment: CrossAxisAlignment.start, // テキストの縦方向の配置
+                  blankSpace: 20.0, // テキストがループするときの余白
+                  velocity: 125.0, // テキストの速度
+                  pauseAfterRound: const Duration(seconds: 1), // ループ後の一時停止時間
+                  startPadding: 10.0, // テキストの開始位置の余白
+                  accelerationDuration: const Duration(seconds: 1), // 加速時間
+                  accelerationCurve: Curves.linear, // 加速カーブ
+                  decelerationDuration: const Duration(milliseconds: 500), // 減速時間
+                  decelerationCurve: Curves.easeOut, // 減速カーブ
+                ),
               ),
               /*child: DefaultTextStyle(
                 style: const TextStyle(decoration: TextDecoration.none, fontSize: 32),
@@ -82,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),*/
             ),
           ),
-          const Positioned(
+          /*const Positioned(
             top: 95, // アニメーションテキストの位置より上に固定テキストを表示
             left: 0,
             right: 0,
@@ -95,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
-          ),
+          ),*/
           const Positioned(
             top: 185, // アニメーションテキストの位置より上に固定テキストを表示
             left: 0,
