@@ -11,10 +11,6 @@ void main() {
   runApp(const MyApp());
 }
 
-konosubarasii sekaini syukuhuku wo
-
-pancake tabetai harajukudeiyahoi
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
