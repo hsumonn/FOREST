@@ -8,49 +8,21 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  String weatherDescription = '';
-  bool isDayTime = true;
-
-  void updateWeather(String newDescription, bool dayTime) {
-    setState(() {
-      weatherDescription = newDescription;
-      isDayTime = dayTime;
-    });
-  }
-
-  List<Color> getGradientColors() {
-    if (weatherDescription.contains('rain')) {
-      return isDayTime ? [Colors.blueGrey, Colors.white24] : [Colors.black45, Colors.white24];
-    } else if (weatherDescription.contains('clear')) {
-      return isDayTime ? [Colors.lightBlueAccent, Colors.white] : [Colors.black45, Colors.white24];
-    } else if (weatherDescription.contains('haze') || weatherDescription.contains('cloudy')) {
-      return isDayTime ? [Colors.lightBlueAccent, Colors.white] : [Colors.black45, Colors.white24];
-    } else if (weatherDescription.contains('thunderstorm')) {
-      return [Colors.black45, Colors.white24];
-    } else {
-      return isDayTime ? [Colors.lightBlueAccent, Colors.white] : [Colors.black45, Colors.white24];
-    }
-  }
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: getGradientColors(),
+            //colors: <Color>[Colors.grey, Colors.lightBlueAccent],
+           colors: <Color>[Colors.lightBlueAccent, Colors.white],
           ),
         ),
-        child: DetailMenu(onWeatherChange: updateWeather),
+        child: const DetailMenu(),
       ),
     );
   }
@@ -80,9 +52,7 @@ class WeatherData {
 }
 
 class DetailMenu extends StatefulWidget {
-  final Function(String weatherDescription, bool isDayTime) onWeatherChange;
-
-  const DetailMenu({required this.onWeatherChange, super.key});
+  const DetailMenu({super.key});
 
   @override
   _DetailMenuState createState() => _DetailMenuState();
@@ -98,7 +68,7 @@ class _DetailMenuState extends State<DetailMenu> {
   }
 
   Future<WeatherData> fetchWeatherData() async {
-    const apiKey = 'eed754aeda9ee52d698e40be18de7b9c';
+    const apiKey = 'eed754aeda9ee52d698e40be18de7b9c'; // Replace with your OpenWeatherMap API key
 
     Location location = Location();
     LocationData locData = await location.getLocation();
@@ -107,38 +77,29 @@ class _DetailMenuState extends State<DetailMenu> {
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      WeatherData weatherData = WeatherData.fromJson(json.decode(response.body));
-      bool isDayTime = DateTime.now().hour > 6 && DateTime.now().hour < 18;
-      widget.onWeatherChange(weatherData.description, isDayTime);
-      return weatherData;
+      return WeatherData.fromJson(json.decode(response.body));
     } else {
       throw Exception('Failed to load weather data');
     }
   }
 
-  String getIconUrl(String description, bool isDayTime, int hour) {
-    print('Weather description: $description');
-    print('Is day time: $isDayTime');
-
-    if (description.contains('rain')) {
-      if (description.contains('light')) {
-        return isDayTime ? 'images/light_rain_noon.png' : 'images/light_rain_night.png';
-      } else {
-        return 'images/heavy_rain.png';
-      }
-    } else if (description.contains('clear')) {
-      return isDayTime ? 'images/sunny.png' : 'images/clearnight.png';
-    } else if (description.contains('haze')) {
-      return isDayTime ? 'images/cloudy.png' : 'images/clearnight.png';
-    } else if (description.contains('thunderstorm')) {
-      return 'images/thunder.png';
-    } else {
-      return 'images/sunny.png';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final List<String> imageNames = [
+      'light_rain_noon.png',
+      'heavy_rain.png',
+      'light_rain_night.png',
+      'sunny.png',
+      'light_rain_noon.png',
+      'thunder.png',
+      'heavy_rain.png',
+      'clearnight.png',
+      'cloudy.png',
+      'sunny.png',
+      'sunny.png',
+      'sunny.png'
+    ];
+
     final Map<String, String> cityToKanji = {
       'Osaka': '大阪',
       'Tokyo': '東京',
@@ -158,6 +119,17 @@ class _DetailMenuState extends State<DetailMenu> {
 
           String weatherDescription = snapshot.data!.description.toLowerCase();
           bool isDayTime = DateTime.now().hour > 6 && DateTime.now().hour < 18;
+          String iconUrl;
+
+          if (weatherDescription.contains('rain')) {
+            if (weatherDescription.contains('light')) {
+              iconUrl = isDayTime ? 'images/light_rain_noon.png' : 'images/light_rain_night.png';
+            } else {
+              iconUrl = 'images/heavy_rain.png';
+            }
+          } else {
+            iconUrl = isDayTime ? 'images/sunny.png' : 'images/clearnight.png';
+          }
 
           return SizedBox(
             width: 340,
@@ -204,7 +176,7 @@ class _DetailMenuState extends State<DetailMenu> {
                       ),
                       const SizedBox(height: 10),
                       Image.asset(
-                        getIconUrl(weatherDescription, isDayTime, DateTime.now().hour),
+                        iconUrl,
                         width: 100,
                         height: 100,
                         fit: BoxFit.cover,
@@ -229,13 +201,11 @@ class _DetailMenuState extends State<DetailMenu> {
                           height: 120,
                           child: PageView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: 12,
+                            itemCount: imageNames.length,
                             controller: PageController(initialPage: 2, viewportFraction: 0.2),
                             itemBuilder: (context, index) {
                               DateTime now = DateTime.now();
-                              int displayHour = (now.hour + index) % 24; // Ensure hour is within 0-23 range
-                              bool futureIsDayTime = displayHour > 6 && displayHour < 18;
-                              String hourLabel = '${displayHour.toString().padLeft(2, '0')}:00';
+                              String hourLabel = DateTime(now.year, now.month, now.day, now.hour + index + 1).hour.toString()+ ':00';
                               return Column(
                                 children: [
                                   Text(
@@ -247,7 +217,7 @@ class _DetailMenuState extends State<DetailMenu> {
                                   ),
                                   const SizedBox(height: 4),
                                   Image.asset(
-                                    getIconUrl(weatherDescription, futureIsDayTime, displayHour),
+                                    'images/${imageNames[index]}',
                                     width: 75,
                                     height: 75,
                                     fit: BoxFit.cover,
@@ -328,6 +298,7 @@ class GraphPainter extends CustomPainter {
     path.lineTo(size.width * 0.5, size.height * 0.6);
     path.lineTo(size.width * 0.6, size.height * 0.4);
     path.lineTo(size.width * 0.7, size.height * 0.3);
+    path.lineTo(size.width * 0.8, size.height * 0.2);
     path.lineTo(size.width * 0.9, size.height * 0.1);
     path.lineTo(size.width, 0);
 
@@ -337,3 +308,4 @@ class GraphPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
