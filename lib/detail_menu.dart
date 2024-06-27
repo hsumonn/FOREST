@@ -316,7 +316,7 @@ class _DetailMenuState extends State<DetailMenu> {
                       const SizedBox(height: 20),
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(18.0),
                           child: WeatherForecastTable(),
                         ),
                       ),
@@ -345,7 +345,7 @@ class WeatherForecastTable extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(18.0),
         child: Column(
           children: [
             WeatherForecastRow(hour: '18:00', probability: '83%', temp: '23°', icon: Icons.cloud,),
@@ -383,7 +383,7 @@ class WeatherForecastRow extends StatelessWidget {
         Row(
           children: [
             Icon(icon, color: Colors.white),
-            SizedBox(width: 5),
+            SizedBox(width: 20),
             Text(probability, style: TextStyle(color: Colors.white)),
           ],
         ),
@@ -408,3 +408,4 @@ class StraightLinePainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
+
