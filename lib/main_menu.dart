@@ -22,19 +22,19 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         useMaterial3: true,
       ),
-      home: const MyHomePage(),
+      home: const MainMenu(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class MainMenu extends StatefulWidget {
+  const MainMenu({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MainMenu> createState() => _MainMenuState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MainMenuState extends State<MainMenu> {
   final List<Map<String, dynamic>> _weatherData = [];
   final Logger _logger = Logger();
   final Map<String, String> cityToKanji = {
