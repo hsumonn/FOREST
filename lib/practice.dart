@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:marquee/marquee.dart';
 
 void main() {
@@ -7,7 +6,7 @@ void main() {
 }
 
 class Caution extends StatelessWidget {
-  const Caution({Key? key});
+  const Caution({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +23,7 @@ class Caution extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title});
+  const MyHomePage({super.key, required this.title});
 
   final String title;
 
