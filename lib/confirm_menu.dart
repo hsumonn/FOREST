@@ -70,17 +70,17 @@ class _MyAppState extends State<MyHomePage> {
             final String weatherDescription = data['weather'][0]['description'];
             final bool isRainy = weatherDescription.toLowerCase().contains('rain');
 
-            showLocalNotification('今日のXX時に', '雨が降ります');                           //通知の内容を決めれる場所
+            showLocalNotification('今日のXX時に', '雨が降ります');                   //通知の内容を決めれる場所（雨関係なしに出てくる通知）
 
             if (isRainy) {
               // 通知を表示する処理を実装
               // 例: flutter_local_notificationsパッケージを使って通知を表示
-              showLocalNotification('今日のXX時に', '雨が降ります');                           //通知の内容を決めれる場所
+              showLocalNotification('今日のXX時に', '雨が降ります');                 //通知の内容を決めれる場所　（雨の時しか出てこない通知）
 
             }
           } else {
               if (kDebugMode) {
-                print('天気情報の取得に失敗しました。');
+                print('天気情報の取得に失敗しました。');                              //ここは通知が出ない時に出てくる
               }
             }
         }
@@ -96,12 +96,12 @@ class _MyAppState extends State<MyHomePage> {
     );
 
 
-    const iosNotificationDetail = DarwinNotificationDetails();
-    const notificationDetails = NotificationDetails(
+    const iosNotificationDetail = DarwinNotificationDetails();                  //iOSの通知設定をカスタマイズするために使用されます
+    const notificationDetails = NotificationDetails(                            //iOSとAndroidの両方のプラットフォームで共通の通知設定を指定しています
       iOS: iosNotificationDetail,
       android: androidNotificationDetail,
     );
-    FlutterLocalNotificationsPlugin().show(0, title, message, notificationDetails);
+    FlutterLocalNotificationsPlugin().show(0, title, message, notificationDetails);//指定された通知設定で通知を表示するメソッドです
   }
 
 }
