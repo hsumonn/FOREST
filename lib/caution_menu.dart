@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:marquee/marquee.dart';
+import 'package:umbrella/registration_menu.dart';
+import 'main_menu.dart';
+import 'dart:async';
 
 void main() {
   runApp(const Caution());
@@ -18,22 +21,34 @@ class Caution extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const CautionMenu(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class CautionMenu extends StatefulWidget {
 
   final String title;
 
-  const MyHomePage({super.key, required this.title});
+  const CautionMenu({super.key, required this.title});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<CautionMenu> createState() => _CautionMenuState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _CautionMenuState extends State<CautionMenu> {
+  @override
+  void initState() {
+    super.initState();
+    //5秒後に遷移
+    Timer(const Duration(seconds: 5,),() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const MainMenu()),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -246,7 +261,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   decoration: TextDecoration.none,
                   fontSize: 18,
                   color: Colors.black87,
-                  fontWeight: FontWeight.bold, // Change this to your desired font weight
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
