@@ -1,11 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:location/location.dart';
 import 'package:logger/logger.dart';
+import 'detail_menu.dart';
+import 'registration_menu.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'detail_menu.dart'; // Import DetailMenu.dart or provide the correct path
-import 'registration_menu.dart'; // Import registration_menu.dart or provide the correct path
 
 void main() {
   runApp(const MyApp());
@@ -18,10 +18,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-      ),
       home: const MainMenu(),
     );
   }
@@ -35,7 +31,7 @@ class MainMenu extends StatefulWidget {
 }
 
 class _MainMenuState extends State<MainMenu> {
-  final List<Map<String, dynamic>> _weatherData = [];
+  Map<String, dynamic>? _weatherData;
   final Logger _logger = Logger();
   final Map<String, String> cityToKanji = {
     'Tokyo': '東京',
@@ -45,46 +41,24 @@ class _MainMenuState extends State<MainMenu> {
     'Sapporo': '札幌',
     'Fukuoka': '福岡',
     'Hiroshima': '広島',
-    'Mountain View': '中崎町',
-    // Add more cities as needed
+    'Mountain View': '中崎',
   };
+
+  String weatherDescription = '';
+  bool isDayTime = true;
+  String userName = '';
+  String _currentLocation = '';
+  String _destination = '';
 
   @override
   void initState() {
     super.initState();
     _fetchWeather();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _fetchWeather();
+    _loadUserName();
+    _loadPreferences();
   }
 
   Future<void> _fetchWeather() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final locations = prefs.getStringList('locations') ?? [];
-    final trimmedLocations = locations.map((location) => location.trim()).toList();
-
-    _weatherData.clear(); // Clear existing data before fetching new data
-
-    if (trimmedLocations.isEmpty || trimmedLocations.every((location) => location.isEmpty)) {
-      await _fetchCurrentDeviceLocationWeather();
-    } else {
-      // Limit the number of locations to 2
-      if (trimmedLocations.length > 1) {
-        trimmedLocations.removeAt(0); // Remove the oldest location
-      }
-
-      for (final location in trimmedLocations) {
-        if (location.isNotEmpty) {
-          await _getWeatherForLocation(location);
-        }
-      }
-    }
-  }
-
-  Future<void> _fetchCurrentDeviceLocationWeather() async {
     final location = Location();
     LocationData? locData;
     PermissionStatus? hasPermission;
@@ -103,140 +77,166 @@ class _MainMenuState extends State<MainMenu> {
     }
 
     if (locData != null) {
-      final data = await _fetchWeatherDataByCoordinates(locData.latitude!, locData.longitude!);
-      if (data != null) {
-        _addWeatherData(data);
-      }
-    }
-  }
+      const apiKey = '003ef1d65597b85d2ab6fa19b59383b6'; // Replace with your OpenWeatherMap API key
+      final url =
+          'https://api.openweathermap.org/data/2.5/weather?lat=${locData.latitude}&lon=${locData.longitude}&units=metric&appid=$apiKey';
 
-  Future<Map<String, dynamic>?> _fetchWeatherDataByCoordinates(double latitude, double longitude) async {
-    const apiKey = '003ef1d65597b85d2ab6fa19b59383b6'; // Replace with your OpenWeatherMap API key
-    final url = 'https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&units=metric&appid=$apiKey';
-
-    try {
       final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        return json.decode(response.body);
-      } else {
-        _logger.e('Error fetching weather data: ${response.statusCode}');
-      }
-    } catch (e) {
-      _logger.e('Error fetching weather data:', e);
-    }
+      final data = json.decode(response.body);
 
-    return null;
-  }
+      setState(() {
+        final now = DateTime.now();
+        final sunrise = DateTime.fromMillisecondsSinceEpoch(data['sys']['sunrise'] * 1000);
+        final sunset = DateTime.fromMillisecondsSinceEpoch(data['sys']['sunset'] * 1000);
+        isDayTime = now.isAfter(sunrise) && now.isBefore(sunset);
+        weatherDescription = data['weather'][0]['description'].toLowerCase();
+        String cityName = data['name'];
 
-  Future<void> _getWeatherForLocation(String location) async {
-    final locationData = await _getLocationCoordinates(location);
-
-    if (locationData != null) {
-      final data = await _fetchWeatherDataByCoordinates(locationData.latitude!, locationData.longitude!);
-      if (data != null) {
-        _addWeatherData(data);
-      }
-    }
-  }
-
-  Future<LocationData?> _getLocationCoordinates(String location) async {
-    // Example using OpenCage Geocoding API (replace with your API key)
-    const apiKey = '90c42a6ae6844f05a1d5f665f1b58b6d';
-    final url = 'https://api.opencagedata.com/geocode/v1/json?q=${Uri.encodeComponent(location)}&key=$apiKey';
-
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final coordinates = data['results'][0]['geometry'];
-        return LocationData.fromMap({
-          'latitude': coordinates['lat'],
-          'longitude': coordinates['lng'],
-        });
-      } else {
-        _logger.e('Error fetching coordinates: ${response.statusCode}');
-      }
-    } catch (e) {
-      _logger.e('Error fetching coordinates:', e);
-    }
-    return null;
-  }
-
-  void _addWeatherData(Map<String, dynamic> data) {
-    setState(() {
-      final now = DateTime.now();
-      final sunrise = DateTime.fromMillisecondsSinceEpoch(data['sys']['sunrise'] * 1000);
-      final sunset = DateTime.fromMillisecondsSinceEpoch(data['sys']['sunset'] * 1000);
-      final isDayTime = now.isAfter(sunrise) && now.isBefore(sunset);
-      final weatherDescription = data['weather'][0]['description'].toLowerCase();
-      String cityName = data['name'];
-
-      // Convert city name to Kanji if it exists in the map
-      if (cityToKanji.containsKey(cityName)) {
-        cityName = cityToKanji[cityName]!;
-      }
-
-      String iconUrl = _getIconUrl(weatherDescription, isDayTime);
-
-      // Check if the city already exists in _weatherData
-      bool cityExists = false;
-      int existingIndex = -1;
-      for (int i = 0; i < _weatherData.length; i++) {
-        if (_weatherData[i]['city'] == cityName) {
-          cityExists = true;
-          existingIndex = i;
-          break;
+        if (cityToKanji.containsKey(cityName)) {
+          cityName = cityToKanji[cityName]!;
         }
-      }
 
-      if (cityExists) {
-        // Update the existing entry
-        _weatherData[existingIndex]['iconUrl'] = iconUrl;
-        _weatherData[existingIndex]['rainTime'] = weatherDescription.contains('rain') ? '雨' : '晴れ';
-      } else {
-        // Add a new entry
-        _weatherData.add({
+        String iconUrl;
+        if (weatherDescription.contains('rain')) {
+          if (weatherDescription.contains('light')) {
+            iconUrl = isDayTime ? 'images/light_rain_noon.png' : 'images/light_rain_night.png';
+          } else {
+            iconUrl = 'images/heavy_rain.png';
+          }
+        } else {
+          iconUrl = isDayTime ? 'images/sunny.png' : 'images/clearnight.png';
+        }
+
+        _weatherData = {
           'city': cityName,
           'iconUrl': iconUrl,
           'rainTime': weatherDescription.contains('rain') ? '雨' : '晴れ',
-        });
-      }
-    });
-  }
-
-  String _getIconUrl(String weatherDescription, bool isDayTime) {
-    if (weatherDescription.contains('rain')) {
-      return 'images/heavy_rain.png'; // Use the same icon for all rain types
-    } else {
-      return isDayTime ? 'images/sunny.png' : 'images/clearnight.png';
+        };
+      });
     }
   }
 
-  Widget _buildWeatherInfo(Map<String, dynamic> weather) {
+  Future<void> _loadUserName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userName = prefs.getString('userName') ?? '';
+    });
+  }
+
+  Future<void> _loadPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _currentLocation = prefs.getString('currentLocation') ?? '';
+      _destination = prefs.getString('destination') ?? '';
+    });
+  }
+
+  List<Color> getGradientColors() {
+    if (weatherDescription.contains('rain')) {
+      return isDayTime ? [Colors.blueGrey, Colors.white24] : [Colors.black45, Colors.white24];
+    } else if (weatherDescription.contains('clear')) {
+      return isDayTime ? [Colors.lightBlueAccent, Colors.white] : [Colors.black45, Colors.white24];
+    } else if (weatherDescription.contains('haze') || weatherDescription.contains('cloudy')) {
+      return isDayTime ? [Colors.lightBlueAccent, Colors.white] : [Colors.black45, Colors.white24];
+    } else if (weatherDescription.contains('thunderstorm')) {
+      return [Colors.black45, Colors.white24];
+    } else {
+      return [Colors.lightBlueAccent, Colors.white];
+    }
+  }
+
+  Widget _buildWeatherInfo(Map<String, dynamic> weather, String currentLocation, String destination) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text(
-          weather['city'],
-          style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const DetailMenu()), // Navigate to DetailMenu
-            );
-          },
-          child: Image.asset(
-            weather['iconUrl'],
-            width: 160,
-            height: 160,
+        if (currentLocation.isNotEmpty)
+          Column(
+            children: [
+              Text(
+                '現在位置: $currentLocation',
+                style: const TextStyle(fontSize: 16, color: Colors.white),
+              ),
+              SizedBox(height: 10),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      transitionDuration: Duration(milliseconds: 400),
+                      pageBuilder: (context, animation, secondaryAnimation) => DetailMenu(
+                        onWeatherChange: (String newDescription, bool dayTime, List<double> newRainfallData, double newRainProbability) {
+                          print('Weather changed: $newDescription, Daytime: $dayTime');
+                        },
+                      ),
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(1.0, 0.0);
+                        const end = Offset.zero;
+                        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.ease));
+
+                        return SlideTransition(
+                          position: animation.drive(tween),
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
+                },
+                child: Image.asset(
+                  weather['iconUrl'],
+                  width: 160,
+                  height: 160,
+                ),
+              ),
+              Text(
+                weather['rainTime'],
+                style: const TextStyle(fontSize: 25, color: Colors.white),
+              ),
+            ],
           ),
-        ),
-        Text(
-          weather['rainTime'],
-          style: const TextStyle(fontSize: 25, color: Colors.white),
-        ),
+        if (destination.isNotEmpty)
+          Column(
+            children: [
+              Text(
+                '目的地: $destination',
+                style: const TextStyle(fontSize: 16, color: Colors.white),
+              ),
+              SizedBox(height: 10),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      transitionDuration: Duration(milliseconds: 400),
+                      pageBuilder: (context, animation, secondaryAnimation) => DetailMenu(
+                        onWeatherChange: (String newDescription, bool dayTime, List<double> newRainfallData, double newRainProbability) {
+                          print('Weather changed: $newDescription, Daytime: $dayTime');
+                        },
+                      ),
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(1.0, 0.0);
+                        const end = Offset.zero;
+                        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.ease));
+
+                        return SlideTransition(
+                          position: animation.drive(tween),
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
+                },
+                child: Image.asset(
+                  weather['iconUrl'],
+                  width: 160,
+                  height: 160,
+                ),
+              ),
+              Text(
+                weather['rainTime'],
+                style: const TextStyle(fontSize: 25, color: Colors.white),
+              ),
+            ],
+          ),
       ],
     );
   }
@@ -245,31 +245,41 @@ class _MainMenuState extends State<MainMenu> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFF9BE2F9), // Background color
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: getGradientColors(),
+          ),
         ),
         child: Stack(
           children: [
-            Positioned(
-              top: 30,
-              right: 10,
-              child: IconButton(
-                icon: Image.asset('images/registration.png'), // Use custom image as icon
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const RegistrationMenu()),
-                  ).then((_) => _fetchWeather()); // Refresh weather data after returning from RegistrationMenu
-                },
-              ),
-            ),
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: _weatherData.map((weather) => _buildWeatherInfo(weather)).toList(),
-                ),
+                child: _weatherData != null
+                    ? _buildWeatherInfo(_weatherData!, _currentLocation, _destination)
+                    : CircularProgressIndicator(),
+              ),
+            ),
+            Positioned(
+              top: 30,
+              right: 10,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: Image.asset('images/registration.png'),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const RegistrationMenu()),
+                      ).then((_) {
+                        _loadPreferences();
+                        _fetchWeather();
+                      });
+                    },
+                  ),
+                ],
               ),
             ),
           ],
