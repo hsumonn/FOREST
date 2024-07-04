@@ -16,9 +16,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const MainMenu(),
+      home: MainMenu(),
     );
   }
 }
@@ -53,7 +53,6 @@ class _MainMenuState extends State<MainMenu> {
   @override
   void initState() {
     super.initState();
-    _fetchWeather();
     _loadUserName();
     _loadPreferences();
   }
@@ -61,16 +60,17 @@ class _MainMenuState extends State<MainMenu> {
   Future<void> _fetchWeather() async {
     final location = Location();
     LocationData? locData;
-    PermissionStatus? hasPermission;
 
     try {
-      hasPermission = await location.hasPermission();
+      var hasPermission = await location.hasPermission();
       if (hasPermission == PermissionStatus.denied) {
         hasPermission = await location.requestPermission();
       }
 
       if (hasPermission == PermissionStatus.granted) {
         locData = await location.getLocation();
+      } else {
+        _logger.w('Location permission denied');
       }
     } catch (e) {
       _logger.e('Error fetching location:', e);
@@ -81,39 +81,51 @@ class _MainMenuState extends State<MainMenu> {
       final url =
           'https://api.openweathermap.org/data/2.5/weather?lat=${locData.latitude}&lon=${locData.longitude}&units=metric&appid=$apiKey';
 
-      final response = await http.get(Uri.parse(url));
-      final data = json.decode(response.body);
-
-      setState(() {
-        final now = DateTime.now();
-        final sunrise = DateTime.fromMillisecondsSinceEpoch(data['sys']['sunrise'] * 1000);
-        final sunset = DateTime.fromMillisecondsSinceEpoch(data['sys']['sunset'] * 1000);
-        isDayTime = now.isAfter(sunrise) && now.isBefore(sunset);
-        weatherDescription = data['weather'][0]['description'].toLowerCase();
-        String cityName = data['name'];
-
-        if (cityToKanji.containsKey(cityName)) {
-          cityName = cityToKanji[cityName]!;
-        }
-
-        String iconUrl;
-        if (weatherDescription.contains('rain')) {
-          if (weatherDescription.contains('light')) {
-            iconUrl = isDayTime ? 'images/light_rain_noon.png' : 'images/light_rain_night.png';
-          } else {
-            iconUrl = 'images/heavy_rain.png';
-          }
+      try {
+        final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          setState(() {
+            _updateWeatherData(data);
+          });
         } else {
-          iconUrl = isDayTime ? 'images/sunny.png' : 'images/clearnight.png';
+          _logger.e('Failed to fetch weather data: ${response.statusCode}');
         }
-
-        _weatherData = {
-          'city': cityName,
-          'iconUrl': iconUrl,
-          'rainTime': weatherDescription.contains('rain') ? '雨' : '晴れ',
-        };
-      });
+      } catch (e) {
+        _logger.e('Error fetching weather data:', e);
+      }
     }
+  }
+
+  void _updateWeatherData(Map<String, dynamic> data) {
+    final now = DateTime.now();
+    final sunrise = DateTime.fromMillisecondsSinceEpoch(data['sys']['sunrise'] * 1000);
+    final sunset = DateTime.fromMillisecondsSinceEpoch(data['sys']['sunset'] * 1000);
+    isDayTime = now.isAfter(sunrise) && now.isBefore(sunset);
+    weatherDescription = data['weather'][0]['description'].toLowerCase();
+    String cityName = data['name'];
+
+    if (cityToKanji.containsKey(cityName)) {
+      cityName = cityToKanji[cityName]!;
+    }
+
+    String iconUrl;
+    if (weatherDescription.contains('rain')) {
+      iconUrl = weatherDescription.contains('light')
+          ? (isDayTime ? 'images/light_rain_noon.png' : 'images/light_rain_night.png')
+          : 'images/heavy_rain.png';
+    } else {
+      iconUrl = isDayTime ? 'images/sunny.png' : 'images/clearnight.png';
+    }
+
+    _weatherData = {
+      'city': cityName,
+      'iconUrl': iconUrl,
+      'rainTime': weatherDescription.contains('rain') ? '雨' : '晴れ',
+    };
+
+    _currentLocation = cityName;
+    _saveCurrentLocation(cityName);
   }
 
   Future<void> _loadUserName() async {
@@ -124,11 +136,20 @@ class _MainMenuState extends State<MainMenu> {
   }
 
   Future<void> _loadPreferences() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
     setState(() {
       _currentLocation = prefs.getString('currentLocation') ?? '';
       _destination = prefs.getString('destination') ?? '';
     });
+
+    if (_currentLocation.isEmpty) {
+      await _fetchWeather();
+    }
+  }
+
+  Future<void> _saveCurrentLocation(String location) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('currentLocation', location);
   }
 
   List<Color> getGradientColors() {
@@ -149,94 +170,54 @@ class _MainMenuState extends State<MainMenu> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        if (currentLocation.isNotEmpty)
-          Column(
-            children: [
-              Text(
-                '現在位置: $currentLocation',
-                style: const TextStyle(fontSize: 16, color: Colors.white),
-              ),
-              SizedBox(height: 10),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      transitionDuration: Duration(milliseconds: 400),
-                      pageBuilder: (context, animation, secondaryAnimation) => DetailMenu(
-                        onWeatherChange: (String newDescription, bool dayTime, List<double> newRainfallData, double newRainProbability) {
-                          print('Weather changed: $newDescription, Daytime: $dayTime');
-                        },
-                      ),
-                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                        const begin = Offset(1.0, 0.0);
-                        const end = Offset.zero;
-                        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.ease));
+        if (currentLocation.isNotEmpty) _buildLocationInfo(weather, currentLocation),
+        if (destination.isNotEmpty) _buildLocationInfo(weather, destination),
+      ],
+    );
+  }
 
-                        return SlideTransition(
-                          position: animation.drive(tween),
-                          child: child,
-                        );
-                      },
-                    ),
+  Widget _buildLocationInfo(Map<String, dynamic> weather, String location) {
+    return Column(
+      children: [
+        Text(
+          location == _currentLocation ? '現在位置: $location' : '目的地: $location',
+          style: const TextStyle(fontSize: 16, color: Colors.white),
+        ),
+        const SizedBox(height: 10),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              PageRouteBuilder(
+                transitionDuration: const Duration(milliseconds: 400),
+                pageBuilder: (context, animation, secondaryAnimation) => DetailMenu(
+                  onWeatherChange: (String newDescription, bool dayTime, List<double> newRainfallData, double newRainProbability) {
+                    _logger.i('Weather changed: $newDescription, Daytime: $dayTime');
+                  },
+                ),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  const begin = Offset(1.0, 0.0);
+                  const end = Offset.zero;
+                  var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.ease));
+
+                  return SlideTransition(
+                    position: animation.drive(tween),
+                    child: child,
                   );
                 },
-                child: Image.asset(
-                  weather['iconUrl'],
-                  width: 160,
-                  height: 160,
-                ),
               ),
-              Text(
-                weather['rainTime'],
-                style: const TextStyle(fontSize: 25, color: Colors.white),
-              ),
-            ],
+            );
+          },
+          child: Image.asset(
+            weather['iconUrl'],
+            width: 160,
+            height: 160,
           ),
-        if (destination.isNotEmpty)
-          Column(
-            children: [
-              Text(
-                '目的地: $destination',
-                style: const TextStyle(fontSize: 16, color: Colors.white),
-              ),
-              SizedBox(height: 10),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      transitionDuration: Duration(milliseconds: 400),
-                      pageBuilder: (context, animation, secondaryAnimation) => DetailMenu(
-                        onWeatherChange: (String newDescription, bool dayTime, List<double> newRainfallData, double newRainProbability) {
-                          print('Weather changed: $newDescription, Daytime: $dayTime');
-                        },
-                      ),
-                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                        const begin = Offset(1.0, 0.0);
-                        const end = Offset.zero;
-                        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.ease));
-
-                        return SlideTransition(
-                          position: animation.drive(tween),
-                          child: child,
-                        );
-                      },
-                    ),
-                  );
-                },
-                child: Image.asset(
-                  weather['iconUrl'],
-                  width: 160,
-                  height: 160,
-                ),
-              ),
-              Text(
-                weather['rainTime'],
-                style: const TextStyle(fontSize: 25, color: Colors.white),
-              ),
-            ],
-          ),
+        ),
+        Text(
+          weather['rainTime'],
+          style: const TextStyle(fontSize: 25, color: Colors.white),
+        ),
       ],
     );
   }
@@ -259,27 +240,22 @@ class _MainMenuState extends State<MainMenu> {
                 padding: const EdgeInsets.all(16.0),
                 child: _weatherData != null
                     ? _buildWeatherInfo(_weatherData!, _currentLocation, _destination)
-                    : CircularProgressIndicator(),
+                    : const CircularProgressIndicator(),
               ),
             ),
             Positioned(
               top: 30,
               right: 10,
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: Image.asset('images/registration.png'),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const RegistrationMenu()),
-                      ).then((_) {
-                        _loadPreferences();
-                        _fetchWeather();
-                      });
-                    },
-                  ),
-                ],
+              child: IconButton(
+                icon: Image.asset('images/registration.png'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const RegistrationMenu()),
+                  ).then((_) {
+                    _loadPreferences();
+                  });
+                },
               ),
             ),
           ],
