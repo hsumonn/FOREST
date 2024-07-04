@@ -189,20 +189,41 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                     ],
                   ),
                   const SizedBox(height: 16.0),
-                  ElevatedButton(
-                    onPressed: () async {
-                      await _clearPreferences();  // Clear previous data
-                      await _savePreferences();   // Save new data
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('情報が保存されました。')),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.black,
-                      backgroundColor: Colors.white,
-                    ),
-                    child: const Text('確認'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // 二つ目のボタンのアクション
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.black,
+                            backgroundColor: Colors.white,
+                          ),
+                          child: const Text('取消'),
+                        ),
+                      ),
+                      const SizedBox(width: 10), // ボタン間のスペースを追加
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            await _clearPreferences();  // Clear previous data
+                            await _savePreferences();   // Save new data
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('情報が保存されました。')),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.black,
+                            backgroundColor: Colors.white,
+                          ),
+                          child: const Text('登録'),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
