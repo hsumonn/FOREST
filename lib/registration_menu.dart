@@ -143,7 +143,7 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
           crossAxisAlignment: CrossAxisAlignment.center,
           //mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            const SizedBox(height: 30.0),
+            const SizedBox(height: 50.0),
             const Text(
               '登録画面',
               style: TextStyle(
