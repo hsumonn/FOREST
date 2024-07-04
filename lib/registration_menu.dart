@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Main Menu',
+      title: 'Registration Menu',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -124,13 +124,13 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Image.asset(
-          './images/logo_test.png',
-          width: 100,
-          height: 50,
-        ),
-      ),
+      // appBar: AppBar(
+      // title: Image.asset(
+      //   './images/logo_test.png',
+      //   width: 100,
+      //   height: 50,
+      // ),
+      // ),
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
@@ -141,7 +141,9 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
+          //mainAxisSize: MainAxisSize.min,
           children: <Widget>[
+            const SizedBox(height: 30.0),
             const Text(
               '登録画面',
               style: TextStyle(
@@ -153,6 +155,7 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
+                  const SizedBox(height: 170.0),
                   TextFormField(
                     controller: _currentLocationController,
                     decoration: const InputDecoration(
