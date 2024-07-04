@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:location/location.dart';
 import 'package:umbrella/registration_menu.dart';
@@ -8,12 +9,23 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   @override
-  _MyAppState createState() => _MyAppState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+
+      debugShowCheckedModeBanner: false,
+      home: WeatherApp(),
+    );
+  }
 }
 
-class _MyAppState extends State<MyApp> {
+class WeatherApp extends StatefulWidget {
+  @override
+  _WeatherAppState createState() => _WeatherAppState();
+}
+
+class _WeatherAppState extends State<WeatherApp> {
   String weatherDescription = '';
   bool isDayTime = true;
   List<double> rainfallData = [];
@@ -47,9 +59,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Container(
+    return Scaffold(
+      body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -57,7 +68,12 @@ class _MyAppState extends State<MyApp> {
             colors: getGradientColors(),
           ),
         ),
-        child: DetailMenu(onWeatherChange: updateWeather),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth:10000), // Adjust maxWidth as needed
+            child: DetailMenu(onWeatherChange: updateWeather),
+          ),
+        ),
       ),
     );
   }
@@ -69,6 +85,7 @@ class WeatherData {
   final String cityName;
   final List<double> rainfallData;
   final double rainProbability;
+  final List<DailyForecast> dailyForecasts;
 
   WeatherData({
     required this.description,
@@ -77,11 +94,11 @@ class WeatherData {
     required this.cityName,
     required this.rainfallData,
     required this.rainProbability,
+    required this.dailyForecasts,
   });
 
   factory WeatherData.fromJson(Map<String, dynamic> json) {
     List<double> rainfallData = [];
-
     if (json.containsKey('rain') && json['rain'].containsKey('1h')) {
       double rain1h = json['rain']['1h'].toDouble();
       rainfallData.add(rain1h);
@@ -91,6 +108,15 @@ class WeatherData {
     if (json.containsKey('pop')) {
       rainProbability = json['pop'].toDouble() * 100;
     }
+
+    List<DailyForecast> dailyForecasts = [];
+    if (json.containsKey('daily')) {
+      for (var day in json['daily']) {
+        DailyForecast forecast = DailyForecast.fromJson(day);
+        dailyForecasts.add(forecast);
+      }
+
+    }
     return WeatherData(
       description: json['weather'][0]['description'],
       icon: json['weather'][0]['icon'],
@@ -98,6 +124,33 @@ class WeatherData {
       cityName: json['name'],
       rainfallData: rainfallData,
       rainProbability: rainProbability,
+      dailyForecasts: dailyForecasts,
+    );
+  }
+}
+
+class DailyForecast {
+  final String day;
+  final double temperature;
+  final String description;
+  final String icon;
+
+  DailyForecast({
+    required this.day,
+    required this.temperature,
+    required this.description,
+    required this.icon,
+  });
+
+  factory DailyForecast.fromJson(Map<String, dynamic> json) {
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(json['dt'] * 1000, isUtc: false);
+    String day = DateFormat('EEEE').format(date);
+
+    return DailyForecast(
+      day: day,
+      temperature: json['temp']['day'].toDouble(),
+      description: json['weather'][0]['description'],
+      icon: json['weather'][0]['icon'],
     );
   }
 }
@@ -177,11 +230,11 @@ class _DetailMenuState extends State<DetailMenu> {
           bool isDayTime = DateTime.now().hour > 6 && DateTime.now().hour < 18;
           print('Weather Description in FutureBuilder: $weatherDescription');
 
-          String iconUrl;
+          //String iconUrl;
 
           return SizedBox(
-            width: 340,
-            height: 740,
+            width: 500,
+            height: 800,
             child: Stack(
               children: [
                 // New icon on the left side
@@ -252,12 +305,13 @@ class _DetailMenuState extends State<DetailMenu> {
                         height: 100,
                         fit: BoxFit.cover,
                       ),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 8),
                       Text(
                         '${snapshot.data!.temperature.toInt()}°C',
                         style: const TextStyle(
                           fontSize: 24,
                           color: Colors.white,
+
                         ),
                       ),
                       const SizedBox(height: 70),
@@ -269,7 +323,7 @@ class _DetailMenuState extends State<DetailMenu> {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: SizedBox(
-                          height: 120,
+                          height: 140,
                           child: PageView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: 12,
@@ -291,14 +345,14 @@ class _DetailMenuState extends State<DetailMenu> {
                                   const SizedBox(height: 4),
                                   Image.asset(
                                     getIconUrl(weatherDescription, futureIsDayTime, displayHour),                                    width: 75,
-                                    height: 75,
+                                    height: 65,
                                     fit: BoxFit.cover,
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     '${(snapshot.data!.temperature - index).toInt()} °C',
                                     style: const TextStyle(
-                                      fontSize: 15,
+                                      fontSize: 16,
                                       color: Colors.white,
                                     ),
                                   ),
@@ -313,11 +367,11 @@ class _DetailMenuState extends State<DetailMenu> {
                         size: const Size(double.infinity, 3),
                         painter: StraightLinePainter(),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.all(18.0),
-                          child: WeatherForecastTable(),
+                          child: WeatherForecastTable(dailyForecasts: snapshot.data!.dailyForecasts),
                         ),
                       ),
                     ],
@@ -337,8 +391,14 @@ class _DetailMenuState extends State<DetailMenu> {
 }
 
 class WeatherForecastTable extends StatelessWidget {
+  final List<DailyForecast> dailyForecasts;
+
+  const WeatherForecastTable({required this.dailyForecasts});
+
   @override
   Widget build(BuildContext context) {
+    print('Daily Forecasts Count: ${dailyForecasts.length}');
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey.withOpacity(0.6),
@@ -347,49 +407,86 @@ class WeatherForecastTable extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(18.0),
         child: Column(
-          children: [
-            WeatherForecastRow(hour: '18:00', probability: '83%', temp: '23°', icon: Icons.cloud,),
-            WeatherForecastRow(hour: '19:00', probability: '40%', temp: '23°', icon: Icons.cloud),
-            WeatherForecastRow(hour: '20:00', probability: '34%', temp: '23°', icon: Icons.cloud),
-            WeatherForecastRow(hour: '21:00', probability: '40%', temp: '23°', icon: Icons.cloud),
-            WeatherForecastRow(hour: '22:00', probability: '51%', temp: '22°', icon: Icons.cloud),
-            WeatherForecastRow(hour: '23:00', probability: '47%', temp: '22°', icon: Icons.cloud),
-          ],
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: dailyForecasts.map((forecast) {
+            print('Forecast: ${forecast.day}, ${forecast.temperature}, ${forecast.description}');
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: WeatherForecastRow(
+                day: forecast.day,
+                description: forecast.description,
+                temp: '${forecast.temperature.toInt()}°C',
+                icon: getIconForDescription(forecast.description),
+              ),
+            );
+          }).toList(),
         ),
       ),
     );
   }
 }
 
+
+  IconData getIconForDescription(String description) {
+    if (description.contains('rain')) {
+      return Icons.cloud;
+    } else if (description.contains('clear')) {
+      return Icons.wb_sunny;
+    } else if (description.contains('haze')) {
+      return Icons.wb_cloudy;
+    } else if (description.contains('thunderstorm')) {
+      return Icons.flash_on;
+    } else {
+      return Icons.wb_sunny;
+    }
+  }
+
+
 class WeatherForecastRow extends StatelessWidget {
-  final String hour;
-  final String probability;
+  final String day;
+  final String description;
   final String temp;
   final IconData icon;
 
   const WeatherForecastRow({
-    required this.hour,
-    required this.probability,
+    required this.day,
+    required this.description,
     required this.temp,
     required this.icon,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
+    child: Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(hour, style: TextStyle(color: Colors.white)),
         Row(
           children: [
-            Icon(icon, color: Colors.white),
-            SizedBox(width: 20),
-            Text(probability, style: TextStyle(color: Colors.white)),
+            Icon(
+              icon,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              day,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.white,
+              ),
+            ),
           ],
         ),
-
-        Text(temp, style: TextStyle(color: Colors.white)),
+        Text(
+          temp,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.white,
+          ),
+        ),
       ],
+    ),
     );
   }
 }
