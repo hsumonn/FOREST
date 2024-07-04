@@ -16,19 +16,19 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MainMenu(),
+      home: const RegistMenu(),
     );
   }
 }
 
-class MainMenu extends StatefulWidget {
-  const MainMenu({super.key});
+class RegistMenu extends StatefulWidget {
+  const RegistMenu({super.key});
 
   @override
-  _MainMenuState createState() => _MainMenuState();
+  _RegistMenuState createState() => _RegistMenuState();
 }
 
-class _MainMenuState extends State<MainMenu> {
+class _RegistMenuState extends State<RegistMenu> {
   String _currentLocation = '';
   String _destination = '';
   List<int> _selectedDays = [];
