@@ -140,12 +140,15 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                   constraints: BoxConstraints(
                     minHeight: constraints.maxHeight,
                   ),
+
                   child: IntrinsicHeight(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
+
                         const SizedBox(height: 50.0),
+
                         const Text(
                           '登録画面',
                           style: TextStyle(
@@ -153,8 +156,10 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                             color: Colors.white,
                           ),
                         ),
+
                         Padding(
                           padding: const EdgeInsets.all(16.0),
+
                           child: Column(
                             children: [
                               const SizedBox(height: 170.0),
@@ -167,7 +172,9 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                                   filled: true,
                                 ),
                               ),
+
                               const SizedBox(height: 16.0),
+
                               TextFormField(
                                 controller: _destinationController,
                                 decoration: const InputDecoration(
@@ -177,7 +184,9 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                                   filled: true,
                                 ),
                               ),
+
                               const SizedBox(height: 16.0),
+
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: <Widget>[
@@ -190,42 +199,84 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                                   _buildCheckbox(7, '土'),
                                 ],
                               ),
+
                               const SizedBox(height: 16.0),
+
+                              //ボタンが2つ入っているrow
+                              //buttons
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: <Widget>[
-                                  Expanded(
+
+                                  //取消ボタン
+                                  //cancel button
+                                  Flexible(
                                     child: ElevatedButton(
+
+                                      //ボタンを押した時の処理
+                                      //Movement when the button is pressed
                                       onPressed: () {
-                                        Navigator.pop(context);
+                                        Navigator.pop(context);   //入力情報を破棄して画面遷移　Discard input information and move to screen.
                                       },
+
+                                      //ボタンの見た目
+                                      //button style
                                       style: ElevatedButton.styleFrom(
-                                        foregroundColor: Colors.black,
-                                        backgroundColor: Colors.white,
+                                        foregroundColor: Colors.white,  //文字色 text color
+                                        backgroundColor: Colors.red,  //背景色 background color
+
+                                        //ボタン同士の距離を指定
+                                        //Specify the distance between buttons.
+                                        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+
+                                        //ボタンの見た目を変更
+                                        //Change the appearance of buttons
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10.0),
+                                        ),
                                       ),
-                                      child: const Text('取消'),
+                                      child: const Text('取消'),    //ボタンに書かれているテキスト button text
                                     ),
                                   ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
+
+                                  //登録ボタン
+                                  //register button
+                                  Flexible(
                                     child: ElevatedButton(
+
+                                      //ボタンを押した時の処理
+                                      //Movement when the button is pressed
                                       onPressed: () async {
-                                        await _clearPreferences();
-                                        await _savePreferences();
+                                        await _clearPreferences();  // Clear previous data
+                                        await _savePreferences();   // Save new data
                                         Navigator.pop(context);
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(content: Text('情報が保存されました。')),
                                         );
                                       },
+
+                                      //ボタンの見た目
+                                      //button style
                                       style: ElevatedButton.styleFrom(
-                                        foregroundColor: Colors.black,
-                                        backgroundColor: Colors.white,
+                                        foregroundColor: Colors.white,            //文字色 text color
+                                        backgroundColor: Colors.lightBlueAccent,  //背景色 background color
+
+                                        //ボタン同士の距離を指定
+                                        //Specify the distance between buttons.
+                                        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+
+                                        //ボタンの見た目を変更
+                                        //Change the appearance of buttons
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10.0),
+                                        ),
                                       ),
-                                      child: const Text('登録'),
+                                      child: const Text('登録'),    //ボタンに書かれているテキスト button text
                                     ),
                                   ),
                                 ],
                               ),
+
                             ],
                           ),
                         ),
