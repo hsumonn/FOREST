@@ -125,114 +125,118 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      // appBar: AppBar(
-      // title: Image.asset(
-      //   './images/logo_test.png',
-      //   width: 100,
-      //   height: 50,
-      // ),
-      // ),
-      body: SingleChildScrollView(
-        child: Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('./images/weather_test.jpg'),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            //mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const SizedBox(height: 50.0),
-              const Text(
-                '登録画面',
-                style: TextStyle(
-                  fontSize: 30,
-                  color: Colors.white,
+      body: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  './images/weather_test.jpg',
+                  fit: BoxFit.cover,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 170.0),
-                    TextFormField(
-                      controller: _currentLocationController,
-                      decoration: const InputDecoration(
-                        hintText: "現在位置",
-                        hintStyle: TextStyle(color: Colors.black),
-                        fillColor: Colors.white,
-                        filled: true,
-                      ),
-                    ),
-                    const SizedBox(height: 16.0),
-                    TextFormField(
-                      controller: _destinationController,
-                      decoration: const InputDecoration(
-                        hintText: "目的地",
-                        hintStyle: TextStyle(color: Colors.black),
-                        fillColor: Colors.white,
-                        filled: true,
-                      ),
-                    ),
-                    const SizedBox(height: 16.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+              SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight,
+                  ),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        _buildCheckbox(1, '日'),
-                        _buildCheckbox(2, '月'),
-                        _buildCheckbox(3, '火'),
-                        _buildCheckbox(4, '水'),
-                        _buildCheckbox(5, '木'),
-                        _buildCheckbox(6, '金'),
-                        _buildCheckbox(7, '土'),
-                      ],
-                    ),
-                    const SizedBox(height: 16.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              // 二つ目のボタンのアクション
-                              Navigator.pop(context);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.black,
-                              backgroundColor: Colors.white,
-                            ),
-                            child: const Text('取消'),
+                        const SizedBox(height: 50.0),
+                        const Text(
+                          '登録画面',
+                          style: TextStyle(
+                            fontSize: 30,
+                            color: Colors.white,
                           ),
                         ),
-                        const SizedBox(width: 10), // ボタン間のスペースを追加
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              await _clearPreferences();  // Clear previous data
-                              await _savePreferences();   // Save new data
-                              Navigator.pop(context);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('情報が保存されました。')),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.black,
-                              backgroundColor: Colors.white,
-                            ),
-                            child: const Text('登録'),
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 170.0),
+                              TextFormField(
+                                controller: _currentLocationController,
+                                decoration: const InputDecoration(
+                                  hintText: "現在位置",
+                                  hintStyle: TextStyle(color: Colors.black),
+                                  fillColor: Colors.white,
+                                  filled: true,
+                                ),
+                              ),
+                              const SizedBox(height: 16.0),
+                              TextFormField(
+                                controller: _destinationController,
+                                decoration: const InputDecoration(
+                                  hintText: "目的地",
+                                  hintStyle: TextStyle(color: Colors.black),
+                                  fillColor: Colors.white,
+                                  filled: true,
+                                ),
+                              ),
+                              const SizedBox(height: 16.0),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: <Widget>[
+                                  _buildCheckbox(1, '日'),
+                                  _buildCheckbox(2, '月'),
+                                  _buildCheckbox(3, '火'),
+                                  _buildCheckbox(4, '水'),
+                                  _buildCheckbox(5, '木'),
+                                  _buildCheckbox(6, '金'),
+                                  _buildCheckbox(7, '土'),
+                                ],
+                              ),
+                              const SizedBox(height: 16.0),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: <Widget>[
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        foregroundColor: Colors.black,
+                                        backgroundColor: Colors.white,
+                                      ),
+                                      child: const Text('取消'),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () async {
+                                        await _clearPreferences();
+                                        await _savePreferences();
+                                        Navigator.pop(context);
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('情報が保存されました。')),
+                                        );
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        foregroundColor: Colors.black,
+                                        backgroundColor: Colors.white,
+                                      ),
+                                      child: const Text('登録'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ],
-          ),
-        ),
+          );
+        },
       ),
     );
   }
