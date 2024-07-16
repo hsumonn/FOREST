@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:marquee/marquee.dart';
-import 'package:umbrella/registration_menu.dart';
+import 'package:umbrella/confirm_menu.dart';
 import 'main_menu.dart';
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 void main() {
   runApp(const Caution());
@@ -21,7 +23,7 @@ class Caution extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const CautionMenu(title: 'Flutter Demo Home Page'),
+      home: const CautionMenu(title: 'Flutter Demo Home Page', payload: 'Hello',),
     );
   }
 }
@@ -29,19 +31,28 @@ class Caution extends StatelessWidget {
 class CautionMenu extends StatefulWidget {
 
   final String title;
+  final String payload;
 
-  const CautionMenu({super.key, required this.title});
+  const CautionMenu({super.key, required this.title, required this.payload});
 
   @override
   State<CautionMenu> createState() => _CautionMenuState();
 }
 
 class _CautionMenuState extends State<CautionMenu> {
+  String _currentLocation = '';
+  String _destination = '';
+  String strongrain = '';
+  String weatherForecast = '';
+
+  bool power = false;
+
   @override
   void initState() {
     super.initState();
+    _initializePreferencesAndCheckWeather();
     //5秒後に遷移
-    Timer(const Duration(seconds: 5,),() {
+    Timer(const Duration(seconds: 10,),() {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const MainMenu()),
@@ -49,8 +60,44 @@ class _CautionMenuState extends State<CautionMenu> {
     });
   }
 
+  Future<void> _initializePreferencesAndCheckWeather() async {
+    await _loadPreferences();
+  }
+
+  Future<void> _loadPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _currentLocation = prefs.getString('currentLocation') ?? '';
+      _destination = prefs.getString('destination') ?? '';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    /*confirmで雨が降る場合降らない場合のジャッジをグローバル変数に入れている。
+    そのtrueかfalseで、どこどこで降るかの表示を変える
+     */
+    if(globalCurrentjudge && globalDestinationjudge) {
+      weatherForecast = '⚠本日、$_currentLocationと$_destinationで、雨の予定あり。 傘をお忘れないように！　　　　';
+    }else if (globalCurrentjudge) {
+      weatherForecast = '⚠本日、$_currentLocationで、雨の予定あり。 傘をお忘れないように！　　　　';
+    }else {
+      weatherForecast = '⚠本日、$_destinationで、雨の予定あり。 傘をお忘れないように！　　　　';
+
+    }
+    //descriptionのどちらかが強と入ってたら、強度強いにし、弱いが含まれない場合中、それ以外弱いが一個も含まれないの逆の時弱
+    if(globalCurrentDiscription.isNotEmpty || globalDestinationDiscription.isNotEmpty) {
+      if(globalDestinationDiscription.contains('強') || globalCurrentDiscription.contains('強')) {
+        strongrain = '強';
+        power = true;
+      }else if(!(globalDestinationDiscription.contains('弱') || globalCurrentDiscription.contains('弱'))) {
+        //これは弱がどちらに含まれていると、弱になってしまうので、中、弱でも弱になってしまうから、強いも弱いも含まれない場合、中にして、弱いが含まれないのelseで弱いを設定する。
+        strongrain = '中';
+      }else {
+        strongrain = '弱';
+      }
+    }
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
@@ -76,7 +123,7 @@ class _CautionMenuState extends State<CautionMenu> {
               child: Padding(
                 padding: const EdgeInsets.only(top: 25.0),
                 child: Marquee(
-                  text: '⚠ 本日、大阪府、○○県で、雨の予定あり。 傘をお忘れないように！   ', // 流れるテキスト
+                  text: '$weatherForecast', // 流れるテキスト
                   style: const TextStyle(color: Colors.white, fontSize: 39,decoration: TextDecoration.none,), // テキストのスタイル
                   scrollAxis: Axis.horizontal, // テキストの流れる方向
                   crossAxisAlignment: CrossAxisAlignment.start, // テキストの縦方向の配置
@@ -118,26 +165,26 @@ class _CautionMenuState extends State<CautionMenu> {
             top: 185, // アニメーションテキストの位置より上に固定テキストを表示
             left: 0,
             right: 0,
-              child: Center(
-                child: Text(
-                  '---------------------------',
-                  style: TextStyle(
-                    decoration: TextDecoration.none,
-                    fontSize: 18,
-                    color: Colors.black54,
-                  ),
+            child: Center(
+              child: Text(
+                '---------------------------',
+                style: TextStyle(
+                  decoration: TextDecoration.none,
+                  fontSize: 18,
+                  color: Colors.black54,
                 ),
               ),
             ),
+          ),
           Positioned(
             top: 200, // アニメーションテキストの位置より上に固定テキストを表示
             left: 0,
             right: 0,
             child: Center(
               child: RichText(
-                text: const TextSpan(
+                text: TextSpan(
                   children: [
-                    TextSpan(
+                    const TextSpan(
                       text: '雨', // "Rain"
                       style: TextStyle(
                         decoration: TextDecoration.none,
@@ -147,7 +194,7 @@ class _CautionMenuState extends State<CautionMenu> {
 // Change this to your desired color
                       ),
                     ),
-                    TextSpan(
+                    const TextSpan(
                       text: 'の', // "Rain"
                       style: TextStyle(
                         decoration: TextDecoration.none,
@@ -155,7 +202,7 @@ class _CautionMenuState extends State<CautionMenu> {
                         color: Colors.white, // Change this to your desired color
                       ),
                     ),
-                    TextSpan(
+                    const TextSpan(
                       text: '強度', // "Intensity:"
                       style: TextStyle(
                         decoration: TextDecoration.none,
@@ -164,7 +211,7 @@ class _CautionMenuState extends State<CautionMenu> {
                         fontWeight: FontWeight.bold, // Change this to your desired font weight
                       ),
                     ),
-                    TextSpan(
+                    const TextSpan(
                       text: '：', // "Intensity:"
                       style: TextStyle(
                         decoration: TextDecoration.none,
@@ -174,8 +221,8 @@ class _CautionMenuState extends State<CautionMenu> {
                       ),
                     ),
                     TextSpan(
-                      text: '強', // "Intensity:"
-                      style: TextStyle(
+                      text: strongrain, // "Intensity:"
+                      style: const TextStyle(
                         decoration: TextDecoration.none,
                         fontSize: 30,
                         color: Colors.redAccent, // Change this to your desired color
@@ -220,36 +267,54 @@ class _CautionMenuState extends State<CautionMenu> {
               ),
             ),
           ),
-          Positioned(
-            left: 170,
-            bottom: 298,
-            child: Container(
-              width: 80,
-              height: 100, // 幅と高さの比率を指
-              decoration: BoxDecoration(
-                image: const DecorationImage(
-                    image: AssetImage('images/heyher.jpg'), // 画像のパスを指定
-                    fit: BoxFit.contain
+          if(power)
+            Positioned(
+              left: 170,
+              bottom: 298,
+              child: Container(
+                width: 80,
+                height: 100, // 幅と高さの比率を指
+                decoration: BoxDecoration(
+                  image: const DecorationImage(
+                      image: AssetImage('images/heyher.jpg'), // 画像のパスを指定
+                      fit: BoxFit.contain
+                  ),
+                  borderRadius: BorderRadius.circular(80.0),
                 ),
-                borderRadius: BorderRadius.circular(80.0),
               ),
             ),
-          ),
-          Positioned(
-            left: 40,
-            bottom: 285,
-            child: Container(
-              width: 160,
-              height: 120, // 幅と高さの比率を指
-              decoration: BoxDecoration(
-                image: const DecorationImage(
-                    image: AssetImage('images/umbrella_big2.png'), // 画像のパスを指定
-                    fit: BoxFit.contain
+          if(power)
+            Positioned(
+              left: 40,
+              bottom: 285,
+              child: Container(
+                width: 160,
+                height: 120, // 幅と高さの比率を指
+                decoration: BoxDecoration(
+                  image: const DecorationImage(
+                      image: AssetImage('images/umbrella_big2.png'), // 画像のパスを指定
+                      fit: BoxFit.contain
+                  ),
+                  borderRadius: BorderRadius.circular(80.0),
                 ),
-                borderRadius: BorderRadius.circular(80.0),
               ),
             ),
-          ),
+          if(!power)
+            Positioned(
+              left: 70,
+              bottom: 285,
+              child: Container(
+                width: 160,
+                height: 120, // 幅と高さの比率を指
+                decoration: BoxDecoration(
+                  image: const DecorationImage(
+                      image: AssetImage('images/umbrella_small.png'), // 画像のパスを指定
+                      fit: BoxFit.contain
+                  ),
+                  borderRadius: BorderRadius.circular(80.0),
+                ),
+              ),
+            ),
           const Positioned(
             bottom: 420, // アニメーションテキストの位置より上に固定テキストを表示
             left: 82,
@@ -272,7 +337,7 @@ class _CautionMenuState extends State<CautionMenu> {
             //right: 0,
             child: Center(
               child: Text(
-                '-----------------',
+                '------------------',
                 style: TextStyle(
                   decoration: TextDecoration.none,
                   fontSize: 18,
