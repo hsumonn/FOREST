@@ -42,6 +42,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyHomePage> {
+  get styleInformation => null;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -92,9 +94,14 @@ class _MyAppState extends State<MyHomePage> {
 
       importance: Importance.max,
       priority: Priority.high,
-      color: Color.fromARGB(255, 0, 0, 0), // 色を指定
-    );
+      icon: '@drawable/light_rain_noon', // アイコンの設定
 
+      //color: Color.fromARGB(255, 0, 0, 0), // 色を指定
+      // icon:  '@images/light_rain_noon'
+      // largeIcon: FilePathAndroidBitmap('@images/light_rain_noon'),
+      // styleInformation: styleInformation,
+    );
+//
 
     const iosNotificationDetail = DarwinNotificationDetails();                  //iOSの通知設定をカスタマイズするために使用されます
     const notificationDetails = NotificationDetails(                            //iOSとAndroidの両方のプラットフォームで共通の通知設定を指定しています
