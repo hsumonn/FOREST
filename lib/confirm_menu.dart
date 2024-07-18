@@ -1,33 +1,58 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'caution_menu.dart';
+
+//雨の詳細をグローバル変数に。
+String globalCurrentDiscription = '';
+String globalDestinationDiscription = '';
+
+//雨が降るかのジャッジ
+bool globalCurrentjudge = false;
+bool globalDestinationjudge = false;
 
 void main() {
-
   WidgetsFlutterBinding.ensureInitialized();
+  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  const initializationSettings = InitializationSettings(
+    android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+    iOS: DarwinInitializationSettings(),
+  );
 
-  FlutterLocalNotificationsPlugin()
-    ..resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestNotificationsPermission()
-    ..initialize(const InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-      iOS: DarwinInitializationSettings(),
-    ));
+  flutterLocalNotificationsPlugin.initialize(initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) async {
+        if (response.payload != null) {
+          final parts = response.payload!.split('|');
+          print('Notification payload received: $parts');
+          if (parts.length >= 2) {
+            final title = parts[0];
+            final message = parts[1];
+            Navigator.of(navigatorKey.currentContext!).push(MaterialPageRoute(
+              builder: (context) => CautionMenu(title: title, payload: message),
+            ));
+          } else {
+            print("Invalid payload format");
+          }
+        }
+      });
 
   runApp(const MyApp());
 }
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Flutter Demo',                                                    //ここのコードはアプリのタイトル名の指定をしている
-      home: MyHomePage(title: 'Flutter Demo Home Page'),                        //ここのコードはアプリのメイン画面を構築するためのウィジェットです
+    return MaterialApp(
+      navigatorKey: navigatorKey,
+      title: 'Weather Notification App',
+      debugShowCheckedModeBanner: false,
+      home: const MyHomePage(title: 'Weather Notification Home Page'),
     );
   }
 }
@@ -42,73 +67,155 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyHomePage> {
-  get styleInformation => null;
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
+  String _currentLocation = '';
+  String _destination = '';
+  String weather_current = '';
+  String weather_destination = '';
+  List<int> _selectedDays = [];
+  final String apiKey = 'cf3c7bba4d5b23a7aed18c0a3c624324';
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    _initializePreferencesAndCheckWeather();
+  }
+
+  Future<void> _initializePreferencesAndCheckWeather() async {
+    await _loadPreferences();
+    await _checkWeatherAndNotify();
+  }
+
+  Future<void> _loadPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _currentLocation = prefs.getString('currentLocation') ?? '';
+      _destination = prefs.getString('destination') ?? '';
+      _selectedDays = prefs.getStringList('selectedDays')
+          ?.map((e) => int.parse(e))
+          .toList() ??
+          [];
+    });
+    print('Preferences loaded: $_currentLocation, $_destination, $_selectedDays');
+  }
+
+  Future<void> _checkWeatherAndNotify() async {
+    final now = DateTime.now();
+    final nowNum = now.weekday;
+
+    /*if (_currentLocation.isEmpty) {
+      print('Current location is empty, skipping weather check.');
+      return;
+    }*/
+
+    final urlCurrent =
+        'https://api.openweathermap.org/data/2.5/weather?q=$_currentLocation&appid=$apiKey&lang=ja';
+
+    final urlDistination =
+        'https://api.openweathermap.org/data/2.5/weather?q=$_destination&appid=$apiKey&lang=ja';
+
+    if (!(_selectedDays.contains(nowNum))) {
+      try {
+        print('Fetching weather data for $_currentLocation from: $urlCurrent');
+        final responseCurrent = await http.get(Uri.parse(urlCurrent));
+        print('API response status: ${responseCurrent.statusCode}');
+        if (responseCurrent.statusCode == 200) {
+          final dataCurrent = json.decode(responseCurrent.body);
+          weather_current = dataCurrent['weather'][0]['main'];
+          globalCurrentDiscription = dataCurrent['weather'][0]['description'];
+          print('Weather data received: $weather_current');
+          if (weather_current == 'Rain') {
+            globalCurrentjudge = true;
+          }
+          /*setState(() {
+            _currentLocation = data_current['name']; // Example update
+          });*/
+        } else {
+          print(
+              'Failed to load weather data: ${responseCurrent.reasonPhrase}');
+        }
+        //distinationの天気を取得する
+        print('Fetching weather data for $_destination from: $urlDistination');
+        final responseDistination = await http.get(Uri.parse(urlDistination));
+        print('API response status: ${responseDistination.statusCode}');
+        if (responseDistination.statusCode == 200) {
+          final dataDestination = json.decode(responseDistination.body);
+          weather_destination = dataDestination['weather'][0]['main'];
+          globalDestinationDiscription = dataDestination['weather'][0]['description'];
+          print('Weather data received: $weather_destination');
+          if (weather_destination == 'Rain') {
+            globalDestinationjudge = true;
+          }
+          /*setState(() {
+            _destination = data_destination['name']; // Example update
+          });*/
+          print(globalDestinationjudge);
+
+          //どちらかが雨が降る場合
+          if (globalDestinationjudge || globalCurrentjudge) {
+            if (globalDestinationjudge && globalCurrentjudge) {
+              showLocalNotification(
+                  '天気予報：', '$_currentLocationと$_destination で雨が降る予定があります🌧️');
+            } else {
+              if (globalCurrentjudge) {
+                showLocalNotification(
+                    '天気予報：', '$_currentLocation で雨が降る予定があります。🌧️');
+              } else {
+                showLocalNotification('天気予報：', '$_destination で雨が降る予定があります。🌧️');
+              }
+            }
+          }
+        }else {
+          print('Failed to load weather data: ${responseCurrent.reasonPhrase}');
+        }
+      } catch (e) {
+        print('Error fetching weather data: $e');
+      }
+    }
+  }
+
+  void showLocalNotification(String title, String message) {
+    const androidNotificationDetail = AndroidNotificationDetails(
+      'channel_id',
+      'channel_name',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+    const iosNotificationDetail = DarwinNotificationDetails();
+    const notificationDetails = NotificationDetails(
+      iOS: iosNotificationDetail,
+      android: androidNotificationDetail,
+    );
+
+    flutterLocalNotificationsPlugin.show(
+      0,
+      title,
+      message,
+      notificationDetails,
+      payload: '$title|$message',
+    );
+    print('Notification shown: $title - $message');
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ローカルプッシュ通知 テスト',                                          //ここのコードはアプリのタイトル名
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('通知テスト'),                                        //ここのコードは左上に出てくる物です
-        ),
-        body: Center(
-          child: FilledButton(
-            onPressed: _onPressed,
-            child: const Text('通知ボタン'),                                      //ここのコードは通知を出すボタン
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text('Current Location: $_currentLocation'),
+            Text('Destination: $_destination'),
+            Text('Selected Days: $_selectedDays'),
+          ],
         ),
       ),
     );
   }
-
-        Future<void> _onPressed() async {
-          const String apiKey = 'eed754aeda9ee52d698e40be18de7b9c';
-          const String apiUrl = 'https://api.openweathermap.org/data/2.5/weather?lat=35.6895&lon=139.6917&appid=$apiKey';
-
-          final response = await http.get(Uri.parse(apiUrl));
-          if (response.statusCode == 200) {
-            final Map<String, dynamic> data = json.decode(response.body);
-            final String weatherDescription = data['weather'][0]['description'];
-            final bool isRainy = weatherDescription.toLowerCase().contains('rain');
-
-            showLocalNotification('今日のXX時に', '雨が降ります');                   //通知の内容を決めれる場所（雨関係なしに出てくる通知）
-
-            if (isRainy) {
-              // 通知を表示する処理を実装
-              // 例: flutter_local_notificationsパッケージを使って通知を表示
-              showLocalNotification('今日のXX時に', '雨が降ります');                 //通知の内容を決めれる場所　（雨の時しか出てこない通知）
-
-            }
-          } else {
-              if (kDebugMode) {
-                print('天気情報の取得に失敗しました。');                              //ここは通知が出ない時に出てくる
-              }
-            }
-        }
-
-  void showLocalNotification(String title, String message) {
-    const androidNotificationDetail = AndroidNotificationDetails(
-      'channel_id', // チャンネルID
-      'channel_name', // チャンネル名
-
-      importance: Importance.max,
-      priority: Priority.high,
-      icon: '@drawable/light_rain_noon', // アイコンの設定
-
-      //color: Color.fromARGB(255, 0, 0, 0), // 色を指定
-      // icon:  '@images/light_rain_noon'
-      // largeIcon: FilePathAndroidBitmap('@images/light_rain_noon'),
-      // styleInformation: styleInformation,
-    );
-//
-
-    const iosNotificationDetail = DarwinNotificationDetails();                  //iOSの通知設定をカスタマイズするために使用されます
-    const notificationDetails = NotificationDetails(                            //iOSとAndroidの両方のプラットフォームで共通の通知設定を指定しています
-      iOS: iosNotificationDetail,
-      android: androidNotificationDetail,
-    );
-    FlutterLocalNotificationsPlugin().show(0, title, message, notificationDetails);//指定された通知設定で通知を表示するメソッドです
-  }
-
 }

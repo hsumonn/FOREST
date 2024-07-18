@@ -123,7 +123,7 @@ class _CautionMenuState extends State<CautionMenu> {
               child: Padding(
                 padding: const EdgeInsets.only(top: 25.0),
                 child: Marquee(
-                  text: '$weatherForecast', // 流れるテキスト
+                  text: weatherForecast, // 流れるテキスト
                   style: const TextStyle(color: Colors.white, fontSize: 39,decoration: TextDecoration.none,), // テキストのスタイル
                   scrollAxis: Axis.horizontal, // テキストの流れる方向
                   crossAxisAlignment: CrossAxisAlignment.start, // テキストの縦方向の配置
