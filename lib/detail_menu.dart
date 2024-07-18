@@ -75,7 +75,7 @@ class _WeatherAppState extends State<WeatherApp> {
           ),
         ),
         child: Center(
-          child: DetailMenu(onWeatherChange: updateWeather, location: ''),
+          child: DetailMenu(onWeatherChange: updateWeather, location: '',),
         ),
       ),
     );
@@ -88,8 +88,6 @@ class WeatherData {
   final double temperature;
   final String cityName;
   final List<DailyForecast> dailyForecasts;
-  final List<HourlyForecast> hourlyForecasts; // Add this line
-
 
   WeatherData({
     required this.description,
@@ -97,14 +95,10 @@ class WeatherData {
     required this.temperature,
     required this.cityName,
     required this.dailyForecasts,
-    required this.hourlyForecasts, // Add this line
-
   });
 
-  factory WeatherData.fromJson(Map<String, dynamic> currentData, List<dynamic> forecastData,List<dynamic> hourlyData) {
+  factory WeatherData.fromJson(Map<String, dynamic> currentData, List<dynamic> forecastData) {
     List<DailyForecast> dailyForecasts = [];
-    List<HourlyForecast> hourlyForecasts = []; // Add this line
-
 
     // Process current weather data
     String description = currentData['weather'][0]['description'] ?? '';
@@ -122,7 +116,7 @@ class WeatherData {
       if (!forecastMap.containsKey(day)) {
         DailyForecast forecast = DailyForecast(
           day: day,
-          rainProbability: (item['pop'] as num?)?.toDouble() ?? 0.0,
+          rainProbability: (item['rainProbability'] as num?)?.toDouble() ?? 0.0,
           temperature: (item['main']['temp'] as num?)?.toDouble() ?? 0.0,
           description: item['weather'][0]['description'] ?? '',
           icon: item['weather'][0]['icon'] ?? '',
@@ -130,42 +124,10 @@ class WeatherData {
         forecastMap[day] = forecast;
       }
 
-      if (forecastMap.length >= 6) break; // Limit to 5 days
+      if (forecastMap.length >= 5) break; // Limit to 5 days
     }
 
     dailyForecasts = forecastMap.values.toList();
-
-
-    // Process hourly forecast data
-    for (var i = 0; i < forecastData.length; i++) {
-      var item = forecastData[i];
-      DateTime dt = DateTime.fromMillisecondsSinceEpoch(item['dt'] * 1000);
-      HourlyForecast forecast = HourlyForecast(
-        time: dt,
-        temperature: (item['main']['temp'] as num?)?.toDouble() ?? 0.0,
-        description: item['weather'][0]['description'] ?? '',
-        icon: item['weather'][0]['icon'] ?? '',
-      );
-      hourlyForecasts.add(forecast);
-
-      if (i < forecastData.length - 1) {
-        // Interpolate between this forecast and the next one
-        var nextItem = forecastData[i + 1];
-        DateTime nextDt = DateTime.fromMillisecondsSinceEpoch(nextItem['dt'] * 1000);
-        double nextTemp = (nextItem['main']['temp'] as num?)?.toDouble() ?? 0.0;
-        for (int j = 1; j <= 2; j++) {
-          DateTime intermediateTime = dt.add(Duration(hours: j));
-          double interpolatedTemp = forecast.temperature + (nextTemp - forecast.temperature) * (j / 3);
-          HourlyForecast interpolatedForecast = HourlyForecast(
-            time: intermediateTime,
-            temperature: interpolatedTemp,
-            description: forecast.description,
-            icon: forecast.icon,
-          );
-          hourlyForecasts.add(interpolatedForecast);
-        }
-      }
-    }
 
     return WeatherData(
       description: description,
@@ -173,22 +135,7 @@ class WeatherData {
       temperature: temperature,
       cityName: cityName,
       dailyForecasts: dailyForecasts,
-      hourlyForecasts: hourlyForecasts,
     );
-  }
-
-  String getIconUrl(String description, bool isDayTime, int hour) {
-    if (description.contains('rain')) {
-      return 'images/heavy_rain.png';
-    } else if (description.contains('clear')) {
-      return isDayTime ? 'images/sunny.png' : 'images/clearnight.png';
-    } else if (description.contains('haze')) {
-      return isDayTime ? 'images/cloudy.png' : 'images/clearnight.png';
-    } else if (description.contains('thunderstorm')) {
-      return 'images/thunder.png';
-    } else {
-      return 'images/sunny.png';
-    }
   }
 }
 
@@ -205,19 +152,6 @@ class DailyForecast {
     required this.description,
     required this.icon,
     required this.rainProbability,
-  });
-}
-class HourlyForecast {
-  final DateTime time;
-  final double temperature;
-  final String description;
-  final String icon;
-
-  HourlyForecast({
-    required this.time,
-    required this.temperature,
-    required this.description,
-    required this.icon,
   });
 }
 
@@ -242,10 +176,11 @@ class _DetailMenuState extends State<DetailMenu> {
   }
 
   Future<WeatherData> fetchWeatherData(String location) async {
-    final openWeatherMapCurrentUrl =
-        'https://api.openweathermap.org/data/2.5/weather?q=$location&units=metric&appid=cf3c7bba4d5b23a7aed18c0a3c624324';
-    final openWeatherMapForecastUrl =
-        'https://api.openweathermap.org/data/2.5/forecast?q=$location&units=metric&appid=cf3c7bba4d5b23a7aed18c0a3c624324';
+    //const apiKeyOpenWeatherMap = 'cf3c7bba4d5b23a7aed18c0a3c624324'; // Replace with your OpenWeatherMap API key
+
+    // Construct URLs for current and forecast weather data
+    final openWeatherMapCurrentUrl = 'https://api.openweathermap.org/data/2.5/weather?q=$location&units=metric&appid=cf3c7bba4d5b23a7aed18c0a3c624324';
+    final openWeatherMapForecastUrl = 'https://api.openweathermap.org/data/2.5/forecast?q=$location&units=metric&appid=cf3c7bba4d5b23a7aed18c0a3c624324';
 
     final responseCurrent = await http.get(Uri.parse(openWeatherMapCurrentUrl));
     final responseForecast = await http.get(Uri.parse(openWeatherMapForecastUrl));
@@ -254,15 +189,12 @@ class _DetailMenuState extends State<DetailMenu> {
       WeatherData weatherData = WeatherData.fromJson(
         json.decode(responseCurrent.body),
         json.decode(responseForecast.body)['list'],
-        json.decode(responseForecast.body)['list'], // Use the same data for hourly
       );
       return weatherData;
     } else {
       throw Exception('Failed to load weather data');
     }
   }
-
-
 
 
   List<Color> getGradientColors(String weatherDescription, bool isDayTime) {
@@ -297,53 +229,15 @@ class _DetailMenuState extends State<DetailMenu> {
   @override
   Widget build(BuildContext context) {
     final Map<String, String> cityToKanji = {
-      'Hokkaido': '北海道',
-      'Aomori': '青森',
-      'Iwate': '岩手',
-      'Miyagi': '宮城',
-      'Akita': '秋田',
-      'Yamagata': '山形',
-      'Fukushima': '福島',
-      'Ibaraki': '茨城',
-      'Tochigi': '栃木',
-      'Gunma': '群馬',
-      'Saitama': '埼玉',
-      'Chiba': '千葉',
       'Tokyo': '東京',
-      'Kanagawa': '神奈川',
-      'Niigata': '新潟',
-      'Toyama': '富山',
-      'Ishikawa': '石川',
-      'Fukui': '福井',
-      'Yamanashi': '山梨',
-      'Nagano': '長野',
-      'Gifu': '岐阜',
-      'Shizuoka': '静岡',
-      'Aichi': '愛知',
-      'Mie': '三重',
-      'Shiga': '滋賀',
       'Kyoto': '京都',
       'Osaka': '大阪',
-      'Hyogo': '兵庫',
-      'Nara': '奈良',
-      'Wakayama': '和歌山',
-      'Tottori': '鳥取',
-      'Shimane': '島根',
-      'Okayama': '岡山',
-      'Hiroshima': '広島',
-      'Yamaguchi': '山口',
-      'Tokushima': '徳島',
-      'Kagawa': '香川',
-      'Ehime': '愛媛',
-      'Kochi': '高知',
+      'Nagoya': '名古屋',
+      'Sapporo': '札幌',
       'Fukuoka': '福岡',
-      'Saga': '佐賀',
-      'Nagasaki': '長崎',
-      'Kumamoto': '熊本',
-      'Oita': '大分',
-      'Miyazaki': '宮崎',
-      'Kagoshima': '鹿児島',
-      'Okinawa': '沖縄',
+      'Hiroshima': '広島',
+      'Hokkaido': '北海道',
+      // Add more city mappings as needed
     };
 
     return FutureBuilder<WeatherData>(
@@ -366,7 +260,7 @@ class _DetailMenuState extends State<DetailMenu> {
           return Scaffold(
               body:SizedBox(
                 width: 500,
-                height: 1000,
+                height: 800,
                 child: Stack(
                   children: [
                     Container(
@@ -380,12 +274,12 @@ class _DetailMenuState extends State<DetailMenu> {
                     ),
                     // New icon on the left side
                     Padding(
-                      padding: const EdgeInsets.only(top: 50, left: 20),
+                      padding: const EdgeInsets.only(top: 20, left: 20),
                       child: Align(
                         alignment: Alignment.topLeft,
                         child: IconButton(
                           icon: Image.asset(
-                            'images/modoru1111.png', // Replace with your icon image path
+                            'images/modoru.png', // Replace with your icon image path
                             width: 40,
                             height: 40,
                             fit: BoxFit.cover,
@@ -404,7 +298,7 @@ class _DetailMenuState extends State<DetailMenu> {
 
                     // Old icon on the right side
                     Padding(
-                      padding: const EdgeInsets.only(top: 50, right: 20),
+                      padding: const EdgeInsets.only(top: 20, right: 20),
                       child: Align(
                         alignment: Alignment.topRight,
                         child: Row(
@@ -434,10 +328,11 @@ class _DetailMenuState extends State<DetailMenu> {
 
                     // Moving to the center of the screen
                     Padding(
-                      padding: const EdgeInsets.only(top: 110),
+                      padding: const EdgeInsets.only(top: 80),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+
                           Text(
                             cityName,
                             style: const TextStyle(
@@ -447,7 +342,7 @@ class _DetailMenuState extends State<DetailMenu> {
                           ),
                           const SizedBox(height: 10),
                           Image.asset(
-                            snapshot.data!.getIconUrl(weatherDescription, isDayTime, DateTime.now().hour),
+                            getIconUrl(weatherDescription, isDayTime, DateTime.now().hour),
                             width: 100,
                             height: 100,
                             fit: BoxFit.cover,
@@ -469,60 +364,54 @@ class _DetailMenuState extends State<DetailMenu> {
                           Align(
                             alignment: Alignment.centerLeft,
                             child: SizedBox(
-                              height: 150,
+                              height: 140,
                               child: PageView.builder(
                                 scrollDirection: Axis.horizontal,
                                 itemCount: 12,
                                 controller: PageController(initialPage: 2, viewportFraction: 0.2),
                                 itemBuilder: (context, index) {
-                                  HourlyForecast forecast = snapshot.data!.hourlyForecasts[index];
-                                  String hourLabel = '${forecast.time.hour.toString().padLeft(1, '0')}:00';
-                                  print('Hour: $hourLabel, Temp: ${forecast.temperature}, Description: ${forecast.description}');
-                                  return Container(
-                                    color: Colors.grey.withOpacity(0.6),
-                                    margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          hourLabel,
-                                          style: const TextStyle(
-                                            fontSize: 15,
-                                            color: Colors.white,
-                                          ),
+                                  DateTime now = DateTime.now();
+                                  int displayHour = (now.hour + index) % 24;
+                                  bool futureIsDayTime = displayHour > 6 && displayHour < 18;
+                                  String hourLabel = '${displayHour.toString().padLeft(2, '0')}:00';
+                                  return Column(
+                                    children: [
+                                      Text(
+                                        hourLabel,
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          color: Colors.white,
                                         ),
-                                        const SizedBox(height: 4),
-                                        Image.asset(
-                                          snapshot.data!.getIconUrl(forecast.description, isDayTime, forecast.time.hour),
-                                          width: 75,
-                                          height: 65,
-                                          fit: BoxFit.cover,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Image.asset(
+                                        getIconUrl(weatherDescription, futureIsDayTime, displayHour),
+                                        width: 75,
+                                        height: 65,
+                                        fit: BoxFit.cover,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${(snapshot.data!.temperature - index).toInt()} °C',
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.white,
                                         ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          '${forecast.temperature.toInt()}°C',
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   );
                                 },
                               ),
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 1),
                           CustomPaint(
                             size: const Size(double.infinity, 3),
                             painter: StraightLinePainter(),
                           ),
-                          const SizedBox(height: 35),
-
+                          const SizedBox(height: 5),
                           Expanded(
                             child: Padding(
-
                               padding: const EdgeInsets.all(16.0),
                               child: WeatherForecastTable(dailyForecasts: snapshot.data!.dailyForecasts),
                             ),
@@ -530,7 +419,6 @@ class _DetailMenuState extends State<DetailMenu> {
                         ],
                       ),
                     ),
-
                   ],
                 ),
               )
@@ -588,7 +476,7 @@ IconData getIconForDescription(String description) {
   } else if (description.contains('clear')) {
     return Icons.wb_sunny;
   } else if (description.contains('haze') || description.contains('clouds')) {
-    return Icons.wb_sunny;
+    return Icons.wb_cloudy;
   } else if (description.contains('thunderstorm')) {
     return Icons.flash_on;
   } else {
@@ -656,17 +544,13 @@ class WeatherForecastRow extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return Padding(
-
       padding: const EdgeInsets.symmetric(vertical: 3.0),
       child: Row(
-
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-
           Row(
             children: [
-              const SizedBox(width: 24),
-
+              const SizedBox(width: 18),
               Text(
                 getJapaneseDay(day),
                 style: const TextStyle(
@@ -719,13 +603,13 @@ Widget _buildRainProbabilityIcon(double rainProbability) {
   if (rainProbability > 0) {
     return const Icon(
       Icons.circle,
-      color: Colors.blueGrey,
+      color: Colors.blue,
       size: 24,
     );
   } else {
     return const Icon(
       Icons.close,
-      color: Colors.grey,
+      color: Colors.red,
       size: 24,
     );
   }

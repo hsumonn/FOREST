@@ -91,6 +91,73 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
   final TextEditingController _destinationController = TextEditingController();
   List<int> _selectedDays = [];
   final Color BC = Colors.white;
+  final Map<String, String> _validLocations = {
+    'hokkaido': '北海道',
+    'aomori': '青森',
+    'iwate': '岩手',
+    'miyagi': '宮城',
+    'akita': '秋田',
+    'yamagata': '山形',
+    'fukushima': '福島',
+    'ibaraki': '茨城',
+    'tochigi': '栃木',
+    'gunma': '群馬',
+    'saitama': '埼玉',
+    'chiba': '千葉',
+    'tokyo': '東京',
+    'kanagawa': '神奈川',
+    'niigata': '新潟',
+    'toyama': '富山',
+    'ishikawa': '石川',
+    'fukui': '福井',
+    'yamanashi': '山梨',
+    'nagano': '長野',
+    'gifu': '岐阜',
+    'shizuoka': '静岡',
+    'aichi': '愛知',
+    'mie': '三重',
+    'shiga': '滋賀',
+    'kyoto': '京都',
+    'osaka': '大阪',
+    'hyogo': '兵庫',
+    'nara': '奈良',
+    'wakayama': '和歌山',
+    'tottori': '鳥取',
+    'shimane': '島根',
+    'okayama': '岡山',
+    'hiroshima': '広島',
+    'yamaguchi': '山口',
+    'tokushima': '徳島',
+    'kagawa': '香川',
+    'ehime': '愛媛',
+    'kochi': '高知',
+    'fukuoka': '福岡',
+    'saga': '佐賀',
+    'nagasaki': '長崎',
+    'kumamoto': '熊本',
+    'oita': '大分',
+    'miyazaki': '宮崎',
+    'kagoshima': '鹿児島',
+    'okinawa': '沖縄',
+  };
+
+  bool _isValidLocation(String location) {
+    return location.isEmpty || _validLocations.containsKey(location.toLowerCase());
+  }
+
+  Future<void> _savePreferences() async {
+    if (!_isValidLocation(_currentLocationController.text) || !_isValidLocation(_destinationController.text)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('名前間違えました、もう一回入力してください')),
+      );
+      return;
+    }
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('currentLocation', _currentLocationController.text);
+    await prefs.setString('destination', _destinationController.text);
+    await prefs.setStringList('selectedDays', _selectedDays.map((day) => day.toString()).toList());
+  }
 
   @override
   void initState() {
@@ -107,18 +174,17 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
     });
   }
 
-  Future<void> _savePreferences() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('currentLocation', _currentLocationController.text);
-    await prefs.setString('destination', _destinationController.text);
-    await prefs.setStringList('selectedDays', _selectedDays.map((day) => day.toString()).toList());
-  }
-
   Future<void> _clearPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('currentLocation');
     await prefs.remove('destination');
     await prefs.remove('selectedDays');
+  }
+
+  void _showErrorMessage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('名前間違えました、もう一回入力してください')),
+    );
   }
 
   @override
@@ -140,15 +206,12 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                   constraints: BoxConstraints(
                     minHeight: constraints.maxHeight,
                   ),
-
                   child: IntrinsicHeight(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-
                         const SizedBox(height: 50.0),
-
                         const Text(
                           '登録画面',
                           style: TextStyle(
@@ -156,10 +219,8 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                             color: Colors.white,
                           ),
                         ),
-
                         Padding(
                           padding: const EdgeInsets.all(16.0),
-
                           child: Column(
                             children: [
                               const SizedBox(height: 170.0),
@@ -172,9 +233,7 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                                   filled: true,
                                 ),
                               ),
-
                               const SizedBox(height: 16.0),
-
                               TextFormField(
                                 controller: _destinationController,
                                 decoration: const InputDecoration(
@@ -184,9 +243,7 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                                   filled: true,
                                 ),
                               ),
-
                               const SizedBox(height: 16.0),
-
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: <Widget>[
@@ -199,84 +256,55 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                                   _buildCheckbox(7, '土'),
                                 ],
                               ),
-
                               const SizedBox(height: 16.0),
-
-                              //ボタンが2つ入っているrow
-                              //buttons
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: <Widget>[
-
-                                  //取消ボタン
-                                  //cancel button
                                   Flexible(
                                     child: ElevatedButton(
-
-                                      //ボタンを押した時の処理
-                                      //Movement when the button is pressed
                                       onPressed: () {
-                                        Navigator.pop(context);   //入力情報を破棄して画面遷移　Discard input information and move to screen.
+                                        Navigator.pop(context);
                                       },
-
-                                      //ボタンの見た目
-                                      //button style
                                       style: ElevatedButton.styleFrom(
-                                        foregroundColor: Colors.white,  //文字色 text color
-                                        backgroundColor: Colors.red,  //背景色 background color
-
-                                        //ボタン同士の距離を指定
-                                        //Specify the distance between buttons.
+                                        foregroundColor: Colors.white,
+                                        backgroundColor: Colors.red,
                                         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-
-                                        //ボタンの見た目を変更
-                                        //Change the appearance of buttons
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(10.0),
                                         ),
                                       ),
-                                      child: const Text('取消'),    //ボタンに書かれているテキスト button text
+                                      child: const Text('取消'),
                                     ),
                                   ),
-
-                                  //登録ボタン
-                                  //register button
                                   Flexible(
                                     child: ElevatedButton(
-
-                                      //ボタンを押した時の処理
-                                      //Movement when the button is pressed
                                       onPressed: () async {
-                                        await _clearPreferences();  // Clear previous data
-                                        await _savePreferences();   // Save new data
-                                        Navigator.pop(context);
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('情報が保存されました。')),
-                                        );
+                                        String currentLocation = _currentLocationController.text;
+                                        String destination = _destinationController.text;
+                                        if (_isValidLocation(currentLocation) && _isValidLocation(destination)) {
+                                          await _clearPreferences();
+                                          await _savePreferences();
+                                          Navigator.pop(context);
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(content: Text('情報が保存されました。')),
+                                          );
+                                        } else {
+                                          _showErrorMessage();
+                                        }
                                       },
-
-                                      //ボタンの見た目
-                                      //button style
                                       style: ElevatedButton.styleFrom(
-                                        foregroundColor: Colors.white,            //文字色 text color
-                                        backgroundColor: Colors.lightBlueAccent,  //背景色 background color
-
-                                        //ボタン同士の距離を指定
-                                        //Specify the distance between buttons.
+                                        foregroundColor: Colors.white,
+                                        backgroundColor: Colors.lightBlueAccent,
                                         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-
-                                        //ボタンの見た目を変更
-                                        //Change the appearance of buttons
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(10.0),
                                         ),
                                       ),
-                                      child: const Text('登録'),    //ボタンに書かれているテキスト button text
+                                      child: const Text('登録'),
                                     ),
                                   ),
                                 ],
                               ),
-
                             ],
                           ),
                         ),

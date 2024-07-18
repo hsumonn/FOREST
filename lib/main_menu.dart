@@ -299,9 +299,9 @@ class _MainMenuState extends State<MainMenu> {
       children: <Widget>[
         Text(
           '$displayLocation: ${weather['city']}',
-          style: const TextStyle(fontSize: 23, color: Colors.white),
+          style: const TextStyle(fontSize: 27, fontWeight: FontWeight.bold, color: Colors.white),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 7),
         GestureDetector(
           onTap: () {
             Navigator.push(
@@ -338,13 +338,13 @@ class _MainMenuState extends State<MainMenu> {
             children: [
               Image.asset(
                 weather['iconUrl'],
-                width: 175,
-                height: 175,
+                width: 170,
+                height: 170,
               ),
               const SizedBox(height: 10),
               Text(
                 '${weather['weather']}',
-                style: const TextStyle(fontSize: 23, color: Colors.white),
+                style: const TextStyle(fontSize: 27, fontWeight: FontWeight.bold, color: Colors.white),
               ),
             ],
           ),
@@ -374,6 +374,9 @@ class _MainMenuState extends State<MainMenu> {
                   children: <Widget>[
                     if (_currentWeatherData != null &&
                         _destinationWeatherData != null)
+                      if (_currentWeatherData == _destinationWeatherData)
+                        _buildWeatherInfo(_currentWeatherData!, globalCurrentLocation)
+                      else
                       Column(
                         children: [
                           _buildWeatherInfo(
@@ -389,6 +392,9 @@ class _MainMenuState extends State<MainMenu> {
                           _currentWeatherData!, globalCurrentLocation),
                     if (_currentWeatherData == null &&
                         _destinationWeatherData != null)
+                      if (_autoWeatherData == _destinationWeatherData)
+                        _buildWeatherInfo(_autoWeatherData!, globalAutoLocation)
+                      else
                       Column(
                         children: [
                           _buildWeatherInfo(_autoWeatherData!, globalAutoLocation),
@@ -424,6 +430,19 @@ class _MainMenuState extends State<MainMenu> {
                     _loadPreferences();
                   });
                 },
+              ),
+            ),
+            Positioned(
+              top: 40,
+              right: MediaQuery.of(context).size.width / 2 - 65,
+              child: const Text(
+                '現在の天気',
+                style: TextStyle(
+                  decoration: TextDecoration.none,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
+                ),
               ),
             ),
           ],
