@@ -374,9 +374,6 @@ class _MainMenuState extends State<MainMenu> {
                   children: <Widget>[
                     if (_currentWeatherData != null &&
                         _destinationWeatherData != null)
-                      if (_currentWeatherData == _destinationWeatherData)
-                        _buildWeatherInfo(_currentWeatherData!, globalCurrentLocation)
-                      else
                       Column(
                         children: [
                           _buildWeatherInfo(
@@ -392,9 +389,6 @@ class _MainMenuState extends State<MainMenu> {
                           _currentWeatherData!, globalCurrentLocation),
                     if (_currentWeatherData == null &&
                         _destinationWeatherData != null)
-                      if (_autoWeatherData == _destinationWeatherData)
-                        _buildWeatherInfo(_autoWeatherData!, globalAutoLocation)
-                      else
                       Column(
                         children: [
                           _buildWeatherInfo(_autoWeatherData!, globalAutoLocation),

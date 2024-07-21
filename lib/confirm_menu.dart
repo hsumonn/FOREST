@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'caution_menu.dart';
+import 'registration_menu.dart';
 
 //雨の詳細をグローバル変数に。
 String globalCurrentDiscription = '';
@@ -104,28 +105,28 @@ class _MyAppState extends State<MyHomePage> {
 
   Future<void> _checkWeatherAndNotify() async {
     final now = DateTime.now();
-    final nowNum = now.weekday;
+    final now_num = now.weekday;
 
     /*if (_currentLocation.isEmpty) {
       print('Current location is empty, skipping weather check.');
       return;
     }*/
 
-    final urlCurrent =
+    final url_current =
         'https://api.openweathermap.org/data/2.5/weather?q=$_currentLocation&appid=$apiKey&lang=ja';
 
-    final urlDistination =
+    final url_distination =
         'https://api.openweathermap.org/data/2.5/weather?q=$_destination&appid=$apiKey&lang=ja';
 
-    if (!(_selectedDays.contains(nowNum))) {
+    if (!(_selectedDays.contains(now_num))) {
       try {
-        print('Fetching weather data for $_currentLocation from: $urlCurrent');
-        final responseCurrent = await http.get(Uri.parse(urlCurrent));
-        print('API response status: ${responseCurrent.statusCode}');
-        if (responseCurrent.statusCode == 200) {
-          final dataCurrent = json.decode(responseCurrent.body);
-          weather_current = dataCurrent['weather'][0]['main'];
-          globalCurrentDiscription = dataCurrent['weather'][0]['description'];
+        print('Fetching weather data for $_currentLocation from: $url_current');
+        final response_current = await http.get(Uri.parse(url_current));
+        print('API response status: ${response_current.statusCode}');
+        if (response_current.statusCode == 200) {
+          final data_current = json.decode(response_current.body);
+          weather_current = data_current['weather'][0]['main'];
+          globalCurrentDiscription = data_current['weather'][0]['description'];
           print('Weather data received: $weather_current');
           if (weather_current == 'Rain') {
             globalCurrentjudge = true;
@@ -135,16 +136,16 @@ class _MyAppState extends State<MyHomePage> {
           });*/
         } else {
           print(
-              'Failed to load weather data: ${responseCurrent.reasonPhrase}');
+              'Failed to load weather data: ${response_current.reasonPhrase}');
         }
         //distinationの天気を取得する
-        print('Fetching weather data for $_destination from: $urlDistination');
-        final responseDistination = await http.get(Uri.parse(urlDistination));
-        print('API response status: ${responseDistination.statusCode}');
-        if (responseDistination.statusCode == 200) {
-          final dataDestination = json.decode(responseDistination.body);
-          weather_destination = dataDestination['weather'][0]['main'];
-          globalDestinationDiscription = dataDestination['weather'][0]['description'];
+        print('Fetching weather data for $_destination from: $url_distination');
+        final response_distination = await http.get(Uri.parse(url_distination));
+        print('API response status: ${response_distination.statusCode}');
+        if (response_distination.statusCode == 200) {
+          final data_destination = json.decode(response_distination.body);
+          weather_destination = data_destination['weather'][0]['main'];
+          globalDestinationDiscription = data_destination['weather'][0]['description'];
           print('Weather data received: $weather_destination');
           if (weather_destination == 'Rain') {
             globalDestinationjudge = true;
@@ -156,20 +157,28 @@ class _MyAppState extends State<MyHomePage> {
 
           //どちらかが雨が降る場合
           if (globalDestinationjudge || globalCurrentjudge) {
-            if (globalDestinationjudge && globalCurrentjudge) {
-              showLocalNotification(
-                  '天気予報：', '$_currentLocationと$_destination で雨が降る予定があります🌧️');
-            } else {
-              if (globalCurrentjudge) {
-                showLocalNotification(
-                    '天気予報：', '$_currentLocation で雨が降る予定があります。🌧️');
-              } else {
-                showLocalNotification('天気予報：', '$_destination で雨が降る予定があります。🌧️');
+            while(true) {
+              DateTime nowTime = DateTime.now();
+              if(nowTime.hour == globalHour && nowTime.minute == globalminuteTmp) {
+                if (globalDestinationjudge && globalCurrentjudge) {
+                  showLocalNotification(
+                      '天気予報：',
+                      '$_currentLocationと$_destination で雨が降る予定があります🌧️');
+                } else {
+                  if (globalCurrentjudge) {
+                    showLocalNotification(
+                        '天気予報：', '$_currentLocation で雨が降る予定があります。🌧️');
+                  } else {
+                    showLocalNotification(
+                        '天気予報：', '$_destination で雨が降る予定があります。🌧️');
+                  }
+                  break;
+                }
               }
             }
           }
         }else {
-          print('Failed to load weather data: ${responseCurrent.reasonPhrase}');
+          print('Failed to load weather data: ${response_current.reasonPhrase}');
         }
       } catch (e) {
         print('Error fetching weather data: $e');

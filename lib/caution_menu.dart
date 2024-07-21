@@ -122,7 +122,7 @@ class _CautionMenuState extends State<CautionMenu> {
               child: Padding(
                 padding: EdgeInsets.only(top: size.height * 0.04),
                 child: Marquee(
-                  text: '$weatherForecast',
+                  text: weatherForecast,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: textSize,
