@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:umbrella/registration_menu.dart';
 import 'dart:convert';
 import 'caution_menu.dart';
-import 'registration_menu.dart';
 
 //雨の詳細をグローバル変数に。
 String globalCurrentDiscription = '';
 String globalDestinationDiscription = '';
+String globalKanjiCurrentLocation = '';
+String globalKanjiDestination = '';
 
 //雨が降るかのジャッジ
 bool globalCurrentjudge = false;
@@ -77,6 +79,56 @@ class _MyAppState extends State<MyHomePage> {
   List<int> _selectedDays = [];
   final String apiKey = 'cf3c7bba4d5b23a7aed18c0a3c624324';
 
+  final Map<String, String> cityToKanji = {
+    'Hokkaido': '北海道',
+    'Aomori': '青森',
+    'Iwate': '岩手',
+    'Miyagi': '宮城',
+    'Akita': '秋田',
+    'Yamagata': '山形',
+    'Fukushima': '福島',
+    'Ibaraki': '茨城',
+    'Tochigi': '栃木',
+    'Gunma': '群馬',
+    'Saitama': '埼玉',
+    'Chiba': '千葉',
+    'Tokyo': '東京',
+    'Kanagawa': '神奈川',
+    'Niigata': '新潟',
+    'Toyama': '富山',
+    'Ishikawa': '石川',
+    'Fukui': '福井',
+    'Yamanashi': '山梨',
+    'Nagano': '長野',
+    'Gifu': '岐阜',
+    'Shizuoka': '静岡',
+    'Aichi': '愛知',
+    'Mie': '三重',
+    'Shiga': '滋賀',
+    'Kyoto': '京都',
+    'Osaka': '大阪',
+    'Hyogo': '兵庫',
+    'Nara': '奈良',
+    'Wakayama': '和歌山',
+    'Tottori': '鳥取',
+    'Shimane': '島根',
+    'Okayama': '岡山',
+    'Hiroshima': '広島',
+    'Yamaguchi': '山口',
+    'Tokushima': '徳島',
+    'Kagawa': '香川',
+    'Ehime': '愛媛',
+    'Kochi': '高知',
+    'Fukuoka': '福岡',
+    'Saga': '佐賀',
+    'Nagasaki': '長崎',
+    'Kumamoto': '熊本',
+    'Oita': '大分',
+    'Miyazaki': '宮崎',
+    'Kagoshima': '鹿児島',
+    'Okinawa': '沖縄',
+  };
+
 
 
   @override
@@ -105,28 +157,32 @@ class _MyAppState extends State<MyHomePage> {
 
   Future<void> _checkWeatherAndNotify() async {
     final now = DateTime.now();
-    final now_num = now.weekday;
+    final nowNum = now.weekday;
 
     /*if (_currentLocation.isEmpty) {
       print('Current location is empty, skipping weather check.');
       return;
     }*/
 
-    final url_current =
+    final urlCurrent =
         'https://api.openweathermap.org/data/2.5/weather?q=$_currentLocation&appid=$apiKey&lang=ja';
 
-    final url_distination =
+    final urlDistination =
         'https://api.openweathermap.org/data/2.5/weather?q=$_destination&appid=$apiKey&lang=ja';
 
-    if (!(_selectedDays.contains(now_num))) {
+    if (!(_selectedDays.contains(nowNum))) {
       try {
-        print('Fetching weather data for $_currentLocation from: $url_current');
-        final response_current = await http.get(Uri.parse(url_current));
-        print('API response status: ${response_current.statusCode}');
-        if (response_current.statusCode == 200) {
-          final data_current = json.decode(response_current.body);
-          weather_current = data_current['weather'][0]['main'];
-          globalCurrentDiscription = data_current['weather'][0]['description'];
+        print('Fetching weather data for $_currentLocation from: $urlCurrent');
+        final responseCurrent = await http.get(Uri.parse(urlCurrent));
+        print('API response status: ${responseCurrent.statusCode}');
+        if (responseCurrent.statusCode == 200) {
+          final dataCurrent = json.decode(responseCurrent.body);
+          weather_current = dataCurrent['weather'][0]['main'];
+          String cityName = dataCurrent['name'];
+          if (cityToKanji.containsKey(cityName)) {
+            globalKanjiCurrentLocation = cityToKanji[cityName]!;
+          }
+          globalCurrentDiscription = dataCurrent['weather'][0]['description'];
           print('Weather data received: $weather_current');
           if (weather_current == 'Rain') {
             globalCurrentjudge = true;
@@ -136,16 +192,20 @@ class _MyAppState extends State<MyHomePage> {
           });*/
         } else {
           print(
-              'Failed to load weather data: ${response_current.reasonPhrase}');
+              'Failed to load weather data: ${responseCurrent.reasonPhrase}');
         }
         //distinationの天気を取得する
-        print('Fetching weather data for $_destination from: $url_distination');
-        final response_distination = await http.get(Uri.parse(url_distination));
-        print('API response status: ${response_distination.statusCode}');
-        if (response_distination.statusCode == 200) {
-          final data_destination = json.decode(response_distination.body);
-          weather_destination = data_destination['weather'][0]['main'];
-          globalDestinationDiscription = data_destination['weather'][0]['description'];
+        print('Fetching weather data for $_destination from: $urlDistination');
+        final responseDistination = await http.get(Uri.parse(urlDistination));
+        print('API response status: ${responseDistination.statusCode}');
+        if (responseDistination.statusCode == 200) {
+          final dataDestination = json.decode(responseDistination.body);
+          weather_destination = dataDestination['weather'][0]['main'];
+          String cityName = dataDestination['name'];
+          if (cityToKanji.containsKey(cityName)) {
+            globalKanjiDestination = cityToKanji[cityName]!;
+          }
+          globalDestinationDiscription = dataDestination['weather'][0]['description'];
           print('Weather data received: $weather_destination');
           if (weather_destination == 'Rain') {
             globalDestinationjudge = true;
@@ -159,26 +219,46 @@ class _MyAppState extends State<MyHomePage> {
           if (globalDestinationjudge || globalCurrentjudge) {
             while(true) {
               DateTime nowTime = DateTime.now();
-              if(nowTime.hour == globalHour && nowTime.minute == globalminuteTmp) {
-                if (globalDestinationjudge && globalCurrentjudge) {
-                  showLocalNotification(
-                      '天気予報：',
-                      '$_currentLocationと$_destination で雨が降る予定があります🌧️');
-                } else {
-                  if (globalCurrentjudge) {
+              if (globalHour == null && globalminute == null || globalHour == 0) {
+                if (nowTime.hour == 7 && nowTime.minute == 0) {
+                  if (globalDestinationjudge && globalCurrentjudge) {
                     showLocalNotification(
-                        '天気予報：', '$_currentLocation で雨が降る予定があります。🌧️');
+                        '天気予報：',
+                        '$_currentLocationと$_destination で雨が降る予定があります🌧️');
                   } else {
-                    showLocalNotification(
-                        '天気予報：', '$_destination で雨が降る予定があります。🌧️');
+                    if (globalCurrentjudge) {
+                      showLocalNotification(
+                          '天気予報：', '$_currentLocation で雨が降る予定があります。🌧️');
+                    } else {
+                      showLocalNotification(
+                          '天気予報：', '$_destination で雨が降る予定があります。🌧️');
+                    }
+                    break;
                   }
-                  break;
+                }
+              }
+              if (globalHour != null && globalminute != null && globalHour != 0) {
+                if (nowTime.hour == globalHour && nowTime.minute == globalminuteTmp) {
+                  if (globalDestinationjudge && globalCurrentjudge) {
+                    showLocalNotification(
+                        '天気予報：',
+                        '$_currentLocationと$_destination で雨が降る予定があります🌧️');
+                  } else {
+                    if (globalCurrentjudge) {
+                      showLocalNotification(
+                          '天気予報：', '$_currentLocation で雨が降る予定があります。🌧️');
+                    } else {
+                      showLocalNotification(
+                          '天気予報：', '$_destination で雨が降る予定があります。🌧️');
+                    }
+                    break;
+                  }
                 }
               }
             }
           }
         }else {
-          print('Failed to load weather data: ${response_current.reasonPhrase}');
+          print('Failed to load weather data: ${responseCurrent.reasonPhrase}');
         }
       } catch (e) {
         print('Error fetching weather data: $e');
