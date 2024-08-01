@@ -44,6 +44,55 @@ class _RegistMenuState extends State<RegistMenu> {
     super.initState();
     _loadPreferences();
   }
+  final Map<String, String> validLocations = {
+    'hokkaido': '北海道',
+    'aomori': '青森',
+    'iwate': '岩手',
+    'miyagi': '宮城',
+    'akita': '秋田',
+    'yamagata': '山形',
+    'fukushima': '福島',
+    'ibaraki': '茨城',
+    'tochigi': '栃木',
+    'gunma': '群馬',
+    'saitama': '埼玉',
+    'chiba': '千葉',
+    'tokyo': '東京',
+    'kanagawa': '神奈川',
+    'niigata': '新潟',
+    'toyama': '富山',
+    'ishikawa': '石川',
+    'fukui': '福井',
+    'yamanashi': '山梨',
+    'nagano': '長野',
+    'gifu': '岐阜',
+    'shizuoka': '静岡',
+    'aichi': '愛知',
+    'mie': '三重',
+    'shiga': '滋賀',
+    'kyoto': '京都',
+    'osaka': '大阪',
+    'hyogo': '兵庫',
+    'nara': '奈良',
+    'wakayama': '和歌山',
+    'tottori': '鳥取',
+    'shimane': '島根',
+    'okayama': '岡山',
+    'hiroshima': '広島',
+    'yamaguchi': '山口',
+    'tokushima': '徳島',
+    'kagawa': '香川',
+    'ehime': '愛媛',
+    'kochi': '高知',
+    'fukuoka': '福岡',
+    'saga': '佐賀',
+    'nagasaki': '長崎',
+    'kumamoto': '熊本',
+    'oita': '大分',
+    'miyazaki': '宮崎',
+    'kagoshima': '鹿児島',
+    'okinawa': '沖縄',
+  };
 
   Future<void> _loadPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -52,6 +101,7 @@ class _RegistMenuState extends State<RegistMenu> {
       _destination = prefs.getString('destination') ?? '';
       _selectedDays = prefs.getStringList('selectedDays')?.map((e) => int.parse(e)).toList() ?? [];
     });
+
   }
 
   Future<void> _pickTime(BuildContext context) async {
@@ -116,6 +166,7 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
   final Color BC = Colors.white;
   bool CurrentEmpty = false;
   bool DestinationEmpty = false;
+
   final Map<String, String> _validLocations = {
     // (location map content)
     'hokkaido': '北海道',
@@ -165,7 +216,58 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
     'miyazaki': '宮崎',
     'kagoshima': '鹿児島',
     'okinawa': '沖縄',
+    '北海道': 'hokkaido',
+    '青森': 'aomori',
+    '岩手': 'iwate',
+    '宮城': 'miyagi',
+    '秋田': 'akita',
+    '山形': 'yamagata',
+    '福島': 'fukushima',
+    '茨城': 'ibaraki',
+    '栃木': 'tochigi',
+    '群馬': 'gunma',
+    '埼玉': 'saitama',
+    '千葉': 'chiba',
+    '東京': 'tokyo',
+    '神奈川': 'kanagawa',
+    '新潟': 'niigata',
+    '富山': 'toyama',
+    '石川': 'ishikawa',
+    '福井': 'fukui',
+    '山梨': 'yamanashi',
+    '長野': 'nagano',
+    '岐阜': 'gifu',
+    '静岡': 'shizuoka',
+    '愛知': 'aichi',
+    '三重': 'mie',
+    '滋賀': 'shiga',
+    '京都': 'kyoto',
+    '大阪': 'osaka',
+    '兵庫': 'hyogo',
+    '奈良': 'nara',
+    '和歌山': 'wakayama',
+    '鳥取': 'tottori',
+    '島根': 'shimane',
+    '岡山': 'okayama',
+    '広島': 'hiroshima',
+    '山口': 'yamaguchi',
+    '徳島': 'tokushima',
+    '香川': 'kagawa',
+    '愛媛': 'ehime',
+    '高知': 'kochi',
+    '福岡': 'fukuoka',
+    '佐賀': 'saga',
+    '長崎': 'nagasaki',
+    '熊本': 'kumamoto',
+    '大分': 'oita',
+    '宮崎': 'miyazaki',
+    '鹿児島': 'kagoshima',
+    '沖縄': 'okinawa',
   };
+
+  String _convertKanjiToRomaji(String kanji) {
+    return _validLocations[kanji] ?? kanji; // If not found, return the original input
+  }
 
   bool _isValidLocation(String location) {
     if (location.isEmpty) {
@@ -173,7 +275,7 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
     } else {
       CurrentEmpty = false;
     }
-    return _validLocations.containsKey(location.toLowerCase());
+    return _validLocations.containsKey(location) || _validLocations.containsValue(location);
   }
 
   bool _isDestinationLocation(String location) {
@@ -182,7 +284,7 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
     } else {
       DestinationEmpty = false;
     }
-    return _validLocations.containsKey(location.toLowerCase());
+    return _validLocations.containsKey(location) || _validLocations.containsValue(location);
   }
 
   Future<void> _savePreferences() async {
@@ -192,9 +294,13 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
       );
       return;
     }
+
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('currentLocation', _currentLocationController.text);
-    await prefs.setString('destination', _destinationController.text);
+    String currentLocation = _convertKanjiToRomaji(_currentLocationController.text);
+    String destination = _convertKanjiToRomaji(_destinationController.text);
+
+    await prefs.setString('currentLocation', currentLocation);
+    await prefs.setString('destination', destination);
     await prefs.setStringList('selectedDays', _selectedDays.map((day) => day.toString()).toList());
     if (selectedTime != null) {
       await prefs.setString('selectedTime', '${selectedTime!.hour}:${selectedTime!.minute}');
@@ -348,7 +454,7 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                                         // 選択された時刻の表示
                                         Text(
                                           globalminute != null
-                                              ? "通知時刻：${globalHour}:${globalminute}"
+                                              ? "通知時刻：$globalHour:$globalminute"
                                               : "通知時刻が設定されていません！",
                                           style: const TextStyle(fontSize: 18, color: Colors.white70),
                                         ),
