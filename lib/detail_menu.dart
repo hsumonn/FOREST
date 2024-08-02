@@ -117,7 +117,7 @@ class WeatherData {
 
     for (var item in forecastData) {
       DateTime dt = DateTime.fromMillisecondsSinceEpoch(item['dt'] * 1000);
-      String day = '${dt.day + 1}/${dt.month}';
+      String day = '${dt.month}/${dt.day + 1}';
 
       if (!forecastMap.containsKey(day)) {
         DailyForecast forecast = DailyForecast(
@@ -664,7 +664,7 @@ class WeatherForecastRow extends StatelessWidget {
 
           Row(
             children: [
-              const SizedBox(width: 24),
+              const SizedBox(width: 20),
 
               Text(
                 getJapaneseDay(day),
@@ -673,7 +673,7 @@ class WeatherForecastRow extends StatelessWidget {
                   color: Colors.white,
                 ),
               ),
-              const SizedBox(width: 18),
+              const SizedBox(width: 15),
               Text(
                 day,
                 style: const TextStyle(
@@ -681,12 +681,12 @@ class WeatherForecastRow extends StatelessWidget {
                   color: Colors.white,
                 ),
               ),
-              const SizedBox(width: 23),
+              const SizedBox(width: 20),
               Icon(
                 icon,
                 color: Colors.white,
               ),
-              const SizedBox(width: 18),
+              const SizedBox(width: 15),
               Text(
                 temp,
                 style: const TextStyle(
@@ -694,16 +694,16 @@ class WeatherForecastRow extends StatelessWidget {
                   color: Colors.white,
                 ),
               ),
-              const SizedBox(width: 18),
+              const SizedBox(width: 15),
 
               const Icon(Icons.umbrella, color: Colors.blue, size: 20), // This line is fine
 
               _buildRainProbabilityIcon(rainProbability),
-              const SizedBox(width: 18),
+              const SizedBox(width: 15),
 
               Text(
                 '${(rainProbability * 100).toInt()}%', // This line is fine
-                style: const TextStyle(fontSize: 18, color: Colors.white),
+                style: const TextStyle(fontSize: 16, color: Colors.white),
               ),
             ],
           ),
