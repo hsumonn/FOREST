@@ -271,42 +271,34 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
   }
 
   bool _isValidLocation(String location) {
-    if (location.isEmpty) {
-      CurrentEmpty = true;
-    } else {
-      CurrentEmpty = false;
-    }
-    return _validLocations.containsKey(location) || _validLocations.containsValue(location);
-  }
-
-  bool _isDestinationLocation(String location) {
-    if (location.isEmpty) {
-      DestinationEmpty = true;
-    } else {
-      DestinationEmpty = false;
-    }
     return _validLocations.containsKey(location) || _validLocations.containsValue(location);
   }
 
   Future<void> _savePreferences() async {
-    if (!_isValidLocation(_currentLocationController.text) || !_isDestinationLocation(_destinationController.text)) {
+    final currentLocation = _currentLocationController.text;
+    final destination = _destinationController.text;
+
+    if ((currentLocation.isNotEmpty && !_isValidLocation(currentLocation)) ||
+        (destination.isNotEmpty && !_isValidLocation(destination))) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('名前間違えました、もう一回入力してください')),
       );
       return;
     }
 
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String currentLocation = _convertKanjiToRomaji(_currentLocationController.text);
-    String destination = _convertKanjiToRomaji(_destinationController.text);
 
-    await prefs.setString('currentLocation', currentLocation);
-    await prefs.setString('destination', destination);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final currentLocationRomaji = _convertKanjiToRomaji(currentLocation);
+    final destinationRomaji = _convertKanjiToRomaji(destination);
+
+    await prefs.setString('currentLocation', currentLocationRomaji.isNotEmpty ? currentLocationRomaji : '');
+    await prefs.setString('destination', destinationRomaji.isNotEmpty ? destinationRomaji : '');
     await prefs.setStringList('selectedDays', _selectedDays.map((day) => day.toString()).toList());
     if (selectedTime != null) {
       await prefs.setString('selectedTime', '${selectedTime!.hour}:${selectedTime!.minute}');
     }
   }
+
 
   @override
   void initState() {
@@ -319,11 +311,13 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
     setState(() {
       _currentLocationController.text = prefs.getString('currentLocation') ?? '';
       _destinationController.text = prefs.getString('destination') ?? '';
-      if (_validLocations.containsKey(_currentLocationController.text)) {
-        _currentLocationController.text = _validLocations[_currentLocationController.text]!;
-      }
-      if (_validLocations.containsKey(_destinationController.text)) {
-        _destinationController.text = _validLocations[_destinationController.text]!;
+      if (_currentLocationController.text.isNotEmpty || _destinationController.text.isNotEmpty) {
+        if (_validLocations.containsKey(_currentLocationController.text)) {
+          _currentLocationController.text = _validLocations[_currentLocationController.text]!;
+        }
+        if (_validLocations.containsKey(_destinationController.text)) {
+          _destinationController.text = _validLocations[_destinationController.text]!;
+        }
       }
       _selectedDays = prefs.getStringList('selectedDays')?.map((e) => int.parse(e)).toList() ?? [];
       final timeString = prefs.getString('selectedTime');
@@ -342,17 +336,6 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
     await prefs.remove('selectedTime');
   }
 
-  void _showErrorMessage() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('✗ 登録に失敗しました。もう一度入力してください', style: TextStyle(fontSize: 14)), backgroundColor: Colors.redAccent,),
-    );
-  }
-
-  void _showErrorMessageSecond() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('✗ 自宅地と勤務地、どちらも入力して下さい', style: TextStyle(fontSize: 14)), backgroundColor: Colors.redAccent,),
-    );
-  }
 
   Future<void> _pickTime(BuildContext context) async {
     const initialTime = TimeOfDay(hour: 10, minute: 0);
@@ -515,24 +498,40 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                                           padding: EdgeInsets.only(bottom: size.height * 0.02, right: size.width * 0.09, top: size.height * 0.02),
                                           child: ElevatedButton(
                                             onPressed: () async {
-                                              String currentLocation = _currentLocationController.text;
-                                              String destination = _destinationController.text;
-                                              if (_isValidLocation(currentLocation) && _isDestinationLocation(destination) || DestinationEmpty && CurrentEmpty) {
+                                              String currentLocation = (_currentLocationController.text) ?? '';
+                                              String destination = (_destinationController.text)  ?? '';
+                                              if (currentLocation.isNotEmpty || destination.isNotEmpty) {
+                                                if (_isValidLocation(currentLocation) || _isValidLocation(destination)) {
+                                                  await _clearPreferences(); // Clear previous data
+                                                  await _savePreferences(); // Save new data
+                                                  Navigator.pop(context);
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                          ' ✓    情報の保存に成功しました！',
+                                                          style: TextStyle(
+                                                              fontSize: 19)),
+                                                      backgroundColor: Colors
+                                                          .greenAccent,
+                                                    ),
+                                                  );
+                                                }
+                                              } else {
                                                 await _clearPreferences(); // Clear previous data
                                                 await _savePreferences(); // Save new data
                                                 Navigator.pop(context);
-                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
                                                   const SnackBar(
-                                                    content: Text(' ✓    情報の保存に成功しました！', style: TextStyle(fontSize: 19)),
-                                                    backgroundColor: Colors.greenAccent,
+                                                    content: Text(
+                                                        ' ✓    情報の保存に成功しました！',
+                                                        style: TextStyle(
+                                                            fontSize: 19)),
+                                                    backgroundColor: Colors
+                                                        .greenAccent,
                                                   ),
                                                 );
-                                              } else {
-                                                if (CurrentEmpty || DestinationEmpty) {
-                                                  _showErrorMessageSecond();
-                                                } else {
-                                                  _showErrorMessage();
-                                                }
                                               }
                                             },
                                             style: ElevatedButton.styleFrom(
