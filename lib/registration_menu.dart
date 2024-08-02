@@ -44,6 +44,7 @@ class _RegistMenuState extends State<RegistMenu> {
     super.initState();
     _loadPreferences();
   }
+
   final Map<String, String> validLocations = {
     'hokkaido': '北海道',
     'aomori': '青森',
@@ -97,11 +98,10 @@ class _RegistMenuState extends State<RegistMenu> {
   Future<void> _loadPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _currentLocation = prefs.getString('currentLocation') ?? '';
-      _destination = prefs.getString('destination') ?? '';
+      _currentLocation = validLocations[prefs.getString('currentLocation') ?? ''] ?? '';
+      _destination = validLocations[prefs.getString('destination') ?? ''] ?? '';
       _selectedDays = prefs.getStringList('selectedDays')?.map((e) => int.parse(e)).toList() ?? [];
     });
-
   }
 
   Future<void> _pickTime(BuildContext context) async {
@@ -150,6 +150,7 @@ class _RegistMenuState extends State<RegistMenu> {
     );
   }
 }
+
 
 class RegistrationMenu extends StatefulWidget {
   const RegistrationMenu({super.key});
@@ -318,6 +319,12 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
     setState(() {
       _currentLocationController.text = prefs.getString('currentLocation') ?? '';
       _destinationController.text = prefs.getString('destination') ?? '';
+      if (_validLocations.containsKey(_currentLocationController.text)) {
+        _currentLocationController.text = _validLocations[_currentLocationController.text]!;
+      }
+      if (_validLocations.containsKey(_destinationController.text)) {
+        _destinationController.text = _validLocations[_destinationController.text]!;
+      }
       _selectedDays = prefs.getStringList('selectedDays')?.map((e) => int.parse(e)).toList() ?? [];
       final timeString = prefs.getString('selectedTime');
       if (timeString != null) {
@@ -452,12 +459,23 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                                         ),
                                         const SizedBox(height: 20),
                                         // 選択された時刻の表示
-                                        Text(
-                                          globalminute != null
-                                              ? "通知時刻：$globalHour:$globalminute"
-                                              : "通知時刻が設定されていません！",
-                                          style: const TextStyle(fontSize: 18, color: Colors.white70),
-                                        ),
+                                        if (globalHour != null && globalminute != null && globalHour != 0)
+                                          Text(
+                                            '通知時刻：$globalHour:$globalminute',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.white70,
+                                            ),
+                                          ),
+                                        if (globalHour == null && globalminute == null || globalHour == 0)
+                                          Text(
+                                            '通知時刻が設定されていません！',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.white70,
+                                            ),
+                                          ),
+
                                         const SizedBox(height: 16.0),
                                       ],
                                     ),
