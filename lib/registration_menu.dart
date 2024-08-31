@@ -101,6 +101,11 @@ class _RegistMenuState extends State<RegistMenu> {
       _currentLocation = validLocations[prefs.getString('currentLocation') ?? ''] ?? '';
       _destination = validLocations[prefs.getString('destination') ?? ''] ?? '';
       _selectedDays = prefs.getStringList('selectedDays')?.map((e) => int.parse(e)).toList() ?? [];
+      final timeString = prefs.getString('selectedTime');
+      if (timeString != null) {
+        final timeParts = timeString.split(':');
+        selectedTime = TimeOfDay(hour: int.parse(timeParts[0]), minute: int.parse(timeParts[1]));
+      }
     });
   }
 
@@ -160,63 +165,14 @@ class RegistrationMenu extends StatefulWidget {
 }
 
 class _RegistrationMenuState extends State<RegistrationMenu> {
-  final TextEditingController _currentLocationController = TextEditingController();
-  final TextEditingController _destinationController = TextEditingController();
+  String? _selectedCurrentLocation;
+  String? _selectedDestination;
   List<int> _selectedDays = [];
   TimeOfDay? selectedTime;
   final Color BC = Colors.white;
-  bool CurrentEmpty = false;
-  bool DestinationEmpty = false;
 
-  final Map<String, String> _validLocations = {
-    // (location map content)
-    'hokkaido': '北海道',
-    'aomori': '青森',
-    'iwate': '岩手',
-    'miyagi': '宮城',
-    'akita': '秋田',
-    'yamagata': '山形',
-    'fukushima': '福島',
-    'ibaraki': '茨城',
-    'tochigi': '栃木',
-    'gunma': '群馬',
-    'saitama': '埼玉',
-    'chiba': '千葉',
-    'tokyo': '東京',
-    'kanagawa': '神奈川',
-    'niigata': '新潟',
-    'toyama': '富山',
-    'ishikawa': '石川',
-    'fukui': '福井',
-    'yamanashi': '山梨',
-    'nagano': '長野',
-    'gifu': '岐阜',
-    'shizuoka': '静岡',
-    'aichi': '愛知',
-    'mie': '三重',
-    'shiga': '滋賀',
-    'kyoto': '京都',
-    'osaka': '大阪',
-    'hyogo': '兵庫',
-    'nara': '奈良',
-    'wakayama': '和歌山',
-    'tottori': '鳥取',
-    'shimane': '島根',
-    'okayama': '岡山',
-    'hiroshima': '広島',
-    'yamaguchi': '山口',
-    'tokushima': '徳島',
-    'kagawa': '香川',
-    'ehime': '愛媛',
-    'kochi': '高知',
-    'fukuoka': '福岡',
-    'saga': '佐賀',
-    'nagasaki': '長崎',
-    'kumamoto': '熊本',
-    'oita': '大分',
-    'miyazaki': '宮崎',
-    'kagoshima': '鹿児島',
-    'okinawa': '沖縄',
+  final Map<String, String> _kanjiRomaji = {
+    '削除' : '',
     '北海道': 'hokkaido',
     '青森': 'aomori',
     '岩手': 'iwate',
@@ -266,37 +222,75 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
     '沖縄': 'okinawa',
   };
 
-  String _convertKanjiToRomaji(String kanji) {
-    return _validLocations[kanji] ?? kanji; // If not found, return the original input
-  }
+  final Map<String, String> _romajiKanji = {
+    '' : '削除',
+    'hokkaido': '北海道',
+    'aomori': '青森',
+    'iwate': '岩手',
+    'miyagi': '宮城',
+    'akita': '秋田',
+    'yamagata': '山形',
+    'fukushima': '福島',
+    'ibaraki': '茨城',
+    'tochigi': '栃木',
+    'gunma': '群馬',
+    'saitama': '埼玉',
+    'chiba': '千葉',
+    'tokyo': '東京',
+    'kanagawa': '神奈川',
+    'niigata': '新潟',
+    'toyama': '富山',
+    'ishikawa': '石川',
+    'fukui': '福井',
+    'yamanashi': '山梨',
+    'nagano': '長野',
+    'gifu': '岐阜',
+    'shizuoka': '静岡',
+    'aichi': '愛知',
+    'mie': '三重',
+    'shiga': '滋賀',
+    'kyoto': '京都',
+    'osaka': '大阪',
+    'hyogo': '兵庫',
+    'nara': '奈良',
+    'wakayama': '和歌山',
+    'tottori': '鳥取',
+    'shimane': '島根',
+    'okayama': '岡山',
+    'hiroshima': '広島',
+    'yamaguchi': '山口',
+    'tokushima': '徳島',
+    'kagawa': '香川',
+    'ehime': '愛媛',
+    'kochi': '高知',
+    'fukuoka': '福岡',
+    'saga': '佐賀',
+    'nagasaki': '長崎',
+    'kumamoto': '熊本',
+    'oita': '大分',
+    'miyazaki': '宮崎',
+    'kagoshima': '鹿児島',
+    'okinawa': '沖縄',
 
-  bool _isValidLocation(String location) {
-    return _validLocations.containsKey(location) || _validLocations.containsValue(location);
-  }
+  };
 
   Future<void> _savePreferences() async {
-    final currentLocation = _currentLocationController.text;
-    final destination = _destinationController.text;
-
-    if ((currentLocation.isNotEmpty && !_isValidLocation(currentLocation)) ||
-        (destination.isNotEmpty && !_isValidLocation(destination))) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('名前間違えました、もう一回入力してください')),
-      );
-      return;
-    }
-
-
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final currentLocationRomaji = _convertKanjiToRomaji(currentLocation);
-    final destinationRomaji = _convertKanjiToRomaji(destination);
 
-    await prefs.setString('currentLocation', currentLocationRomaji.isNotEmpty ? currentLocationRomaji : '');
-    await prefs.setString('destination', destinationRomaji.isNotEmpty ? destinationRomaji : '');
+    // Convert Kanji to Romaji before saving
+    final currentLocationRomaji = _convertKanjiToRomaji(_selectedCurrentLocation ?? '');
+    final destinationRomaji = _convertKanjiToRomaji(_selectedDestination ?? '');
+
+    await prefs.setString('currentLocation', currentLocationRomaji);
+    await prefs.setString('destination', destinationRomaji);
     await prefs.setStringList('selectedDays', _selectedDays.map((day) => day.toString()).toList());
     if (selectedTime != null) {
       await prefs.setString('selectedTime', '${selectedTime!.hour}:${selectedTime!.minute}');
     }
+  }
+
+  String _convertKanjiToRomaji(String kanji) {
+    return _kanjiRomaji [kanji] ?? kanji; // If not found, return the original input
   }
 
 
@@ -309,16 +303,8 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
   Future<void> _loadPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _currentLocationController.text = prefs.getString('currentLocation') ?? '';
-      _destinationController.text = prefs.getString('destination') ?? '';
-      if (_currentLocationController.text.isNotEmpty || _destinationController.text.isNotEmpty) {
-        if (_validLocations.containsKey(_currentLocationController.text)) {
-          _currentLocationController.text = _validLocations[_currentLocationController.text]!;
-        }
-        if (_validLocations.containsKey(_destinationController.text)) {
-          _destinationController.text = _validLocations[_destinationController.text]!;
-        }
-      }
+      _selectedCurrentLocation = _romajiKanji[prefs.getString('currentLocation')] ?? '';
+      _selectedDestination = _romajiKanji[prefs.getString('destination')] ?? '';
       _selectedDays = prefs.getStringList('selectedDays')?.map((e) => int.parse(e)).toList() ?? [];
       final timeString = prefs.getString('selectedTime');
       if (timeString != null) {
@@ -382,34 +368,78 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        const SizedBox(height: 50.0),
+                        const SizedBox(height: 90.0),
+                        const Padding(padding: EdgeInsets.all(10.0),
+                          child: Text(
+                            '登録画面',
+                            style: TextStyle(
+                              decoration: TextDecoration.none,
+                              color: Colors.white,
+                              fontSize: 38,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                         Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
                             children: [
-                              const SizedBox(height: 170.0),
-                              TextFormField(
-                                controller: _currentLocationController,
-                                decoration: const InputDecoration(
-                                  hintText: "自宅地",
-                                  hintStyle: TextStyle(color: Colors.black),
-                                  fillColor: Colors.white,
-                                  filled: true,
-                                ),
+                              const SizedBox(height: 50.0),
+                              DropdownButton<String>(
+                                value: _selectedCurrentLocation,
+                                hint: const Text('自宅地'),
+                                items: _romajiKanji.values.map((location) {
+                                  return DropdownMenuItem<String>(
+                                    value: location,
+                                    child: Text(location, style: const TextStyle(
+                                      decoration: TextDecoration.none,
+                                      color: Colors.black,
+                                      fontSize: 28,
+                                    ),),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedCurrentLocation = value;
+                                  });
+                                },
                               ),
                               const SizedBox(height: 16.0),
-                              TextFormField(
-                                controller: _destinationController,
-                                decoration: const InputDecoration(
-                                  hintText: "勤務地",
-                                  hintStyle: TextStyle(color: Colors.black),
-                                  fillColor: Colors.white,
-                                  filled: true,
-                                ),
+                              DropdownButton<String>(
+                                value: _selectedDestination,
+                                hint: const Text('勤務地'),
+                                items: _romajiKanji.values.map((location) {
+                                  return DropdownMenuItem<String>(
+                                    value: location,
+                                    child: Text(location, style: const TextStyle(
+                                      decoration: TextDecoration.none,
+                                      color: Colors.black,
+                                      fontSize: 28,
+                                    ),),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedDestination = value;
+                                  });
+                                },
                               ),
                               const SizedBox(height: 16.0),
                               Padding(
-                                padding: EdgeInsets.only(top: size.height * 0.26),
+                                padding: const EdgeInsets.all(16.0),
+                                child: Container(
+                                  width: size.width * 0.6,  // Adjust as necessary
+                                  height: size.height * 0.2,  // Adjust as necessary
+                                  decoration: const BoxDecoration(
+                                    image: DecorationImage(
+                                      image: AssetImage('images/cloudy_memo.png'),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   children: <Widget>[
@@ -442,16 +472,16 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                                         ),
                                         const SizedBox(height: 20),
                                         // 選択された時刻の表示
-                                        if (globalHour != null && globalminute != null && globalHour != 0)
+                                        if (globalHour != 0)
                                           Text(
                                             '通知時刻：$globalHour:$globalminute',
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontSize: 18,
                                               color: Colors.white70,
                                             ),
                                           ),
                                         if (globalHour == null && globalminute == null || globalHour == 0)
-                                          Text(
+                                          const Text(
                                             '通知時刻が設定されていません！',
                                             style: TextStyle(
                                               fontSize: 18,
@@ -496,54 +526,31 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                                       Flexible(
                                         child: Container(
                                           padding: EdgeInsets.only(bottom: size.height * 0.02, right: size.width * 0.09, top: size.height * 0.02),
-                                          child: ElevatedButton(
-                                            onPressed: () async {
-                                              String currentLocation = (_currentLocationController.text) ?? '';
-                                              String destination = (_destinationController.text)  ?? '';
-                                              if (currentLocation.isNotEmpty || destination.isNotEmpty) {
-                                                if (_isValidLocation(currentLocation) || _isValidLocation(destination)) {
-                                                  await _clearPreferences(); // Clear previous data
-                                                  await _savePreferences(); // Save new data
-                                                  Navigator.pop(context);
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    const SnackBar(
-                                                      content: Text(
-                                                          ' ✓    情報の保存に成功しました！',
-                                                          style: TextStyle(
-                                                              fontSize: 19)),
-                                                      backgroundColor: Colors
-                                                          .greenAccent,
-                                                    ),
-                                                  );
-                                                }
-                                              } else {
+                                            child: ElevatedButton(
+                                              onPressed: () async {
                                                 await _clearPreferences(); // Clear previous data
                                                 await _savePreferences(); // Save new data
-                                                Navigator.pop(context);
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
+                                                Navigator.pop(context); // Close the current screen
+                                                ScaffoldMessenger.of(context).showSnackBar(
                                                   const SnackBar(
                                                     content: Text(
-                                                        ' ✓    情報の保存に成功しました！',
-                                                        style: TextStyle(
-                                                            fontSize: 19)),
-                                                    backgroundColor: Colors
-                                                        .greenAccent,
+                                                      '✓ 情報の保存に成功しました！',
+                                                      style: TextStyle(fontSize: 19),
+                                                    ),
+                                                    backgroundColor: Colors.greenAccent,
                                                   ),
                                                 );
-                                              }
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor: Colors.white, // 文字色 (Text color)
-                                              backgroundColor: Colors.lightBlueAccent, // 背景色 (Background color)
-                                              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(10.0),
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                foregroundColor: Colors.white, // Text color
+                                                backgroundColor: Colors.lightBlueAccent, // Background color
+                                                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(10.0),
+                                                ),
                                               ),
+                                              child: const Text('登録'), // Button text
                                             ),
-                                            child: const Text('登録'), // ボタンに書かれているテキスト (Button text)
-                                          ),
                                         ),
                                       ),
                                     ],
@@ -556,21 +563,7 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                   ),
                 ),),
               Positioned(
-                top: size.height * 0.46,
-                left: size.width * 0.20,  // Adjust as necessary
-                child: Container(
-                  width: size.width * 0.6,  // Adjust as necessary
-                  height: size.height * 0.2,  // Adjust as necessary
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('images/cloudy_memo.png'),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: size.height * 0.535,
+                top: size.height * 0.5,
                 left: size.width * 0.28,  // Adjust as necessary
                 child: const Text(
                   '休みの日を選択！',
@@ -582,19 +575,7 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                   ),
                 ),
               ),
-              Positioned(
-                top: size.height * 0.10,
-                left: size.width * 0.32,  // Adjust as necessary
-                child: const Text(
-                  '登録画面',
-                  style: TextStyle(
-                    decoration: TextDecoration.none,
-                    color: Colors.white,
-                    fontSize: 38,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),],
+              ],
           );
         },),
     );

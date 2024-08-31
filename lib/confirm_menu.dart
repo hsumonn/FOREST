@@ -237,7 +237,7 @@ class _MyAppState extends State<MyHomePage> {
                   }
                 }
               }
-              if (globalHour != null && globalminute != null && globalHour != 0) {
+              if (globalHour != 0) {
                 if (nowTime.hour == globalHour && nowTime.minute == globalminuteTmp) {
                   if (globalDestinationjudge && globalCurrentjudge) {
                     showLocalNotification(
