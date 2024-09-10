@@ -87,30 +87,30 @@ class WeatherData {
   final String icon;
   final double temperature;
   final String cityName;
+  final double rainProbability;
   final List<DailyForecast> dailyForecasts;
-  final List<HourlyForecast> hourlyForecasts; // Add this line
-
-
+  final List<HourlyForecast> hourlyForecasts;
   WeatherData({
     required this.description,
     required this.icon,
     required this.temperature,
     required this.cityName,
+    required this.rainProbability,
     required this.dailyForecasts,
     required this.hourlyForecasts, // Add this line
 
   });
 
-  factory WeatherData.fromJson(Map<String, dynamic> currentData, List<dynamic> forecastData,List<dynamic> hourlyData) {
+  factory WeatherData.fromJson(Map<String, dynamic> currentData, List<dynamic> forecastData, List<dynamic> hourlyData) {
     List<DailyForecast> dailyForecasts = [];
-    List<HourlyForecast> hourlyForecasts = []; // Add this line
-
+    List<HourlyForecast> hourlyForecasts = [];
 
     // Process current weather data
     String description = currentData['weather'][0]['description'] ?? '';
     String icon = currentData['weather'][0]['icon'] ?? '';
     double temperature = (currentData['main']['temp'] as num?)?.toDouble() ?? 0.0;
     String cityName = currentData['name'] ?? '';
+    double rainProbability = (currentData['rain']?['1h'] as num?)?.toDouble() ?? 0.0; // or another relevant field
 
     // Process forecast data for 5 days
     Map<String, DailyForecast> forecastMap = {};
@@ -130,27 +130,27 @@ class WeatherData {
         forecastMap[day] = forecast;
       }
 
-      if (forecastMap.length >= 6) break; // Limit to 5 days
+      if (forecastMap.length >= 5) break; // Limit to 5 days
     }
 
     dailyForecasts = forecastMap.values.toList();
 
-
     // Process hourly forecast data
-    for (var i = 0; i < forecastData.length; i++) {
-      var item = forecastData[i];
+    for (var i = 0; i < hourlyData.length; i++) {
+      var item = hourlyData[i];
       DateTime dt = DateTime.fromMillisecondsSinceEpoch(item['dt'] * 1000);
       HourlyForecast forecast = HourlyForecast(
         time: dt,
         temperature: (item['main']['temp'] as num?)?.toDouble() ?? 0.0,
         description: item['weather'][0]['description'] ?? '',
         icon: item['weather'][0]['icon'] ?? '',
+        rainProbability: (item['pop'] as num?)?.toDouble() ?? 0.0, // Get rain probability
       );
       hourlyForecasts.add(forecast);
 
-      if (i < forecastData.length - 1) {
+      if (i < hourlyData.length - 1) {
         // Interpolate between this forecast and the next one
-        var nextItem = forecastData[i + 1];
+        var nextItem = hourlyData[i + 1];
         double nextTemp = (nextItem['main']['temp'] as num?)?.toDouble() ?? 0.0;
         for (int j = 1; j <= 2; j++) {
           DateTime intermediateTime = dt.add(Duration(hours: j));
@@ -160,6 +160,7 @@ class WeatherData {
             temperature: interpolatedTemp,
             description: forecast.description,
             icon: forecast.icon,
+            rainProbability: forecast.rainProbability, // Carry rain probability to interpolated forecasts
           );
           hourlyForecasts.add(interpolatedForecast);
         }
@@ -170,6 +171,7 @@ class WeatherData {
       description: description,
       icon: icon,
       temperature: temperature,
+      rainProbability: rainProbability, // Use the calculated rainProbability
       cityName: cityName,
       dailyForecasts: dailyForecasts,
       hourlyForecasts: hourlyForecasts,
@@ -190,7 +192,6 @@ class WeatherData {
     }
   }
 }
-
 class DailyForecast {
   final String day;
   final double temperature;
@@ -211,12 +212,14 @@ class HourlyForecast {
   final double temperature;
   final String description;
   final String icon;
+  final double rainProbability;
 
   HourlyForecast({
     required this.time,
     required this.temperature,
     required this.description,
     required this.icon,
+    required this.rainProbability,
   });
 }
 
@@ -260,10 +263,6 @@ class _DetailMenuState extends State<DetailMenu> {
       throw Exception('Failed to load weather data');
     }
   }
-
-
-
-
   List<Color> getGradientColors(String weatherDescription, bool isDayTime) {
     if (weatherDescription.contains('rain')) {
       return isDayTime ? [Colors.blueGrey, Colors.white24] : [Colors.black45, Colors.white24];
@@ -277,8 +276,6 @@ class _DetailMenuState extends State<DetailMenu> {
       return [Colors.lightBlueAccent, Colors.white];
     }
   }
-
-
   String getIconUrl(String description, bool isDayTime, int hour) {
     if (description.contains('rain')) {
       return 'images/heavy_rain.png';
@@ -360,11 +357,9 @@ class _DetailMenuState extends State<DetailMenu> {
               .hour > 6 && DateTime
               .now()
               .hour < 18;
-
-
           return Scaffold(
               body:SizedBox(
-                width: 500,
+                width: 800,
                 height: 1000,
                 child: Stack(
                   children: [
@@ -459,6 +454,10 @@ class _DetailMenuState extends State<DetailMenu> {
                               color: Colors.white,
                             ),
                           ),
+                          Text(
+                            'Rain Probability:${(snapshot.data!.rainProbability * 100).toInt()}%', // This line is fine
+                            style: const TextStyle(fontSize: 18, color: Colors.white),
+                          ),
                           const SizedBox(height: 70),
                           CustomPaint(
                             size: const Size(double.infinity, 3),
@@ -517,7 +516,7 @@ class _DetailMenuState extends State<DetailMenu> {
                             size: const Size(double.infinity, 3),
                             painter: StraightLinePainter(),
                           ),
-                          const SizedBox(height: 35),
+                          const SizedBox(height: 30),
 
                           Expanded(
                             child: Padding(
@@ -555,7 +554,7 @@ class WeatherForecastTable extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.6),
+        color: Colors.grey.withOpacity(0.5),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Padding(
@@ -565,7 +564,7 @@ class WeatherForecastTable extends StatelessWidget {
           children: dailyForecasts.map((forecast) {
             print('Forecast: ${forecast.day}, ${forecast.temperature}, ${forecast.description}');
             return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5.1),
+              padding: const EdgeInsets.symmetric(vertical: 8.1),
               child: WeatherForecastRow(
                 day: forecast.day,
                 rainProbability: forecast.rainProbability,
