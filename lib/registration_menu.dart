@@ -385,45 +385,114 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                           child: Column(
                             children: [
                               const SizedBox(height: 50.0),
-                              DropdownButton<String>(
-                                value: _selectedCurrentLocation,
-                                hint: const Text('自宅地'),
-                                items: _romajiKanji.values.map((location) {
-                                  return DropdownMenuItem<String>(
-                                    value: location,
-                                    child: Text(location, style: const TextStyle(
-                                      decoration: TextDecoration.none,
-                                      color: Colors.black,
-                                      fontSize: 28,
-                                    ),),
+                              GestureDetector(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return ListView(
+                                        children: _romajiKanji.values.map((location) {
+                                          return ListTile(
+                                            title: Text(
+                                              location,
+                                              style: const TextStyle(fontSize: 24),
+                                            ),
+                                            onTap: () {
+                                              setState(() {
+                                                _selectedCurrentLocation = location;
+                                              });
+                                              Navigator.pop(context);
+                                            },
+                                          );
+                                        }).toList(),
+                                      );
+                                    },
                                   );
-                                }).toList(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    _selectedCurrentLocation = value;
-                                  });
                                 },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        spreadRadius: 2,
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        _selectedCurrentLocation ?? '自宅地',
+                                        style: const TextStyle(
+                                          fontSize: 28,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      const Icon(Icons.arrow_drop_down, size: 28, color: Colors.black),
+                                    ],
+                                  ),
+                                ),
                               ),
                               const SizedBox(height: 16.0),
-                              DropdownButton<String>(
-                                value: _selectedDestination,
-                                hint: const Text('勤務地'),
-                                items: _romajiKanji.values.map((location) {
-                                  return DropdownMenuItem<String>(
-                                    value: location,
-                                    child: Text(location, style: const TextStyle(
-                                      decoration: TextDecoration.none,
-                                      color: Colors.black,
-                                      fontSize: 28,
-                                    ),),
+                              GestureDetector(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return ListView(
+                                        children: _romajiKanji.values.map((location) {
+                                          return ListTile(
+                                            title: Text(
+                                              location,
+                                              style: const TextStyle(fontSize: 24),
+                                            ),
+                                            onTap: () {
+                                              setState(() {
+                                                _selectedDestination = location;
+                                              });
+                                              Navigator.pop(context);
+                                            },
+                                          );
+                                        }).toList(),
+                                      );
+                                    },
                                   );
-                                }).toList(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    _selectedDestination = value;
-                                  });
                                 },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        spreadRadius: 2,
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        _selectedDestination ?? '勤務地',
+                                        style: const TextStyle(
+                                          fontSize: 28,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      const Icon(Icons.arrow_drop_down, size: 28, color: Colors.black),
+                                    ],
+                                  ),
+                                ),
                               ),
+
                               const SizedBox(height: 16.0),
                               Padding(
                                 padding: const EdgeInsets.all(16.0),
@@ -488,7 +557,6 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                                               color: Colors.white70,
                                             ),
                                           ),
-
                                         const SizedBox(height: 16.0),
                                       ],
                                     ),
@@ -557,27 +625,18 @@ class _RegistrationMenuState extends State<RegistrationMenu> {
                                   ),
                                 ],
                               )
-                            ],),
+                            ],
+                          ),
                         ),
-                      ],),
-                  ),
-                ),),
-              Positioned(
-                top: size.height * 0.5,
-                left: size.width * 0.28,  // Adjust as necessary
-                child: const Text(
-                  '休みの日を選択！',
-                  style: TextStyle(
-                    decoration: TextDecoration.none,
-                    color: Colors.black54,
-                    fontSize: 23,
-                    fontWeight: FontWeight.bold,
+                      ],
+                    ),
                   ),
                 ),
               ),
-              ],
+            ],
           );
-        },),
+        },
+      ),
     );
   }
 
