@@ -454,11 +454,12 @@ class _DetailMenuState extends State<DetailMenu> {
                               color: Colors.white,
                             ),
                           ),
+                          const SizedBox(height: 8),
                           Text(
                             'Rain Probability:${(snapshot.data!.rainProbability * 100).toInt()}%', // This line is fine
-                            style: const TextStyle(fontSize: 18, color: Colors.white),
+                            style: const TextStyle(fontSize: 20, color: Colors.white),
                           ),
-                          const SizedBox(height: 50),
+                          const SizedBox(height: 40),
                           CustomPaint(
                             size: const Size(double.infinity, 3),
                             painter: StraightLinePainter(),
@@ -497,7 +498,7 @@ class _DetailMenuState extends State<DetailMenu> {
                                           height: 65,
                                           fit: BoxFit.cover,
                                         ),
-                                        const SizedBox(height: 4),
+                                        const SizedBox(height: 7),
                                         Text(
                                           '${forecast.temperature.toInt()}°C',
                                           style: const TextStyle(
@@ -664,7 +665,7 @@ class WeatherForecastRow extends StatelessWidget {
 
           Row(
             children: [
-              const SizedBox(width: 24),
+              const SizedBox(width: 25),
 
               Text(
                 getJapaneseDay(day),
