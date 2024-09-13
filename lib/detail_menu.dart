@@ -428,14 +428,14 @@ class _DetailMenuState extends State<DetailMenu> {
 
                     // Moving to the center of the screen
                     Padding(
-                      padding: const EdgeInsets.only(top: 110),
+                      padding: const EdgeInsets.only(top: 90),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
                             cityName,
                             style: const TextStyle(
-                              fontSize: 24,
+                              fontSize: 28,
                               color: Colors.white,
                             ),
                           ),
@@ -458,7 +458,7 @@ class _DetailMenuState extends State<DetailMenu> {
                             'Rain Probability:${(snapshot.data!.rainProbability * 100).toInt()}%', // This line is fine
                             style: const TextStyle(fontSize: 18, color: Colors.white),
                           ),
-                          const SizedBox(height: 70),
+                          const SizedBox(height: 50),
                           CustomPaint(
                             size: const Size(double.infinity, 3),
                             painter: StraightLinePainter(),
@@ -475,6 +475,7 @@ class _DetailMenuState extends State<DetailMenu> {
                                 itemBuilder: (context, index) {
                                   HourlyForecast forecast = snapshot.data!.hourlyForecasts[index];
                                   String hourLabel = '${forecast.time.hour.toString().padLeft(1, '0')}:00';
+                                  String rainLabel = '';
                                   print('Hour: $hourLabel, Temp: ${forecast.temperature}, Description: ${forecast.description}');
                                   return Container(
                                     color: Colors.grey.withOpacity(0.6),
@@ -504,6 +505,7 @@ class _DetailMenuState extends State<DetailMenu> {
                                             color: Colors.white,
                                           ),
                                         ),
+
                                       ],
                                     ),
                                   );
@@ -624,12 +626,11 @@ IconData? getAdditionalIcon(String description) {
 IconData getWeatherIcon(String description) {
   switch (description.toLowerCase()) {
     case 'sunny':
-      return Icons.wb_sunny
-      ;
+      return Icons.wb_sunny;
     case 'cloudy':
       return Icons.wb_cloudy;
     case 'rainy':
-      return Icons.beach_access; // umbrella icon
+      return Icons.beach_access;
     default:
       return Icons.wb_sunny;
   }
@@ -760,8 +761,6 @@ class StraightLinePainter extends CustomPainter {
 
     canvas.drawLine(Offset(0, size.height / 2), Offset(size.width, size.height / 2), paint);
   }
-
-
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
